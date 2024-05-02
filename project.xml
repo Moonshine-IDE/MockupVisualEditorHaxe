@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="MockupVisualEditorHaxe" package="MockupVisualEditorHaxe" version="1.0.0" company="Prominic.NET" />
+	<app main="openfl.display.Sprite" file="MockupVisualEditorHaxe" />
+		
+	<source path="src" />
+		
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="feathersui" />
+	<haxelib name="amfio"/>
+	<haxelib name="format" />
+	<haxelib name="feathersui-validators"/>
+
+	<assets path="src/assets" rename="assets" />
+
+	<haxeflag name="--macro" value="include('net.prominic')"/>
+	<haxeflag name="--macro" value="include('feathers')"/>
+</project>

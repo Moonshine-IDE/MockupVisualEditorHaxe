@@ -1,0 +1,3 @@
+bin/**/haxe
+bin/**/obj
+.vscode/
