@@ -4,6 +4,7 @@
 	<app main="openfl.display.Sprite" file="MockupVisualEditorHaxe" />
 		
 	<source path="src" />
+	<source path="externs" />
 		
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
