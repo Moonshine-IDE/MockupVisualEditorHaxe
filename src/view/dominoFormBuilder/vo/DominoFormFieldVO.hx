@@ -33,5 +33,7 @@ package view.dominoFormBuilder.vo;
 
 class DominoFormFieldVO 
 {
+    public var isIncludeInView:Bool = true;
+
     public function new() {}    
 }

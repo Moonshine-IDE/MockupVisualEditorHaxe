@@ -31,21 +31,46 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import feathers.layout.VerticalLayoutData;
+import feathers.layout.VerticalLayout;
+import feathers.layout.AnchorLayoutData;
+import utils.MoonshineBridgeUtils;
+import view.interfaces.IDominoFormBuilderLibraryBridge;
 import feathers.skins.RectangleSkin;
 import feathers.layout.AnchorLayout;
 import feathers.controls.LayoutGroup;
 
 class DominoTabularForm extends LayoutGroup 
 {
+    public var moonshineBridge(get, set):IDominoFormBuilderLibraryBridge;
+    private function set_moonshineBridge(value:IDominoFormBuilderLibraryBridge):IDominoFormBuilderLibraryBridge
+    {
+        MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface = value;
+        return value;
+    }
+    private function get_moonshineBridge():IDominoFormBuilderLibraryBridge
+    {
+        return MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface;
+    }
+
     public function new()
     {
         super();
-    }    
+    }
 
     override private function initialize():Void 
     {
-        this.layout = new AnchorLayout();
-        this.backgroundSkin = new RectangleSkin(SolidColor(0xf5f5f5));
+        var thisLayout = new VerticalLayout();
+		thisLayout.horizontalAlign = CENTER;
+		thisLayout.paddingTop = 30;
+		thisLayout.paddingBottom = 30;
+		thisLayout.gap = 30;
+
+		this.layout = thisLayout;
+
+        var formDescriptor = new FormDescriptor();
+        formDescriptor.layoutData = new VerticalLayoutData(60, 100);
+        this.addChild(formDescriptor);
 
         super.initialize();
     }

@@ -29,16 +29,28 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.interfaces;
+package haxeScripts.interfaces;
 
-import openfl.display.DisplayObject;
-import view.dominoFormBuilder.DominoTabularForm;
+import haxeScripts.factory.FileLocation;
 
-interface IDominoFormBuilderLibraryBridge 
+extern class IFileBridge 
 {
-    function getTabularEditorInterfaceWrapper():DominoTabularForm;
-    function getNewMoonshinePopup():DisplayObject;
-    function read(file:String):String;
-    function readAsync(file:String, ?successHandler:(file:String, output:Dynamic)->Void, ?errorHandler:(error:String)->Void):Void;
-    function getDominoFieldTemplateFile(path:String):String;
+    public var url(default, default):String;
+	public var nativeURL(default, default):String;
+	public var nativePath(default, default):String;
+	public var extension(default, default):String;
+	public var name(default, default):String;
+	public var nameWithoutExtension(default, null):String;
+	public var parent(default, null):FileLocation;
+	public var exists(default, null):Bool;
+	public var isDirectory(default, default):Bool;
+	public var separator(default, null):String;
+
+	public function read():Dynamic;
+	public function canonicalize():Void;
+	public function resolvePath(path:String, toRelativePath:String = null):FileLocation;
+	public function browseForDirectory(title:String, selectListener:(file:Any) -> Void, ?cancelListener:() -> Void, ?startFromLocation:String):Void;
+	public function getRelativePath(ref:FileLocation, useDotDot:Bool = false):String;
+	public function isPathExists(value:String):Bool;
+	public function openWithDefaultApplication():Void;    
 }

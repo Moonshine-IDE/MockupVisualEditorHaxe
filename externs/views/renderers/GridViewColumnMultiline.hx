@@ -29,16 +29,14 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.interfaces;
+package views.renderers;
 
-import openfl.display.DisplayObject;
-import view.dominoFormBuilder.DominoTabularForm;
+import feathers.controls.Label;
+import feathers.controls.dataRenderers.LayoutGroupItemRenderer;
 
-interface IDominoFormBuilderLibraryBridge 
+extern class GridViewColumnMultiline extends LayoutGroupItemRenderer
 {
-    function getTabularEditorInterfaceWrapper():DominoTabularForm;
-    function getNewMoonshinePopup():DisplayObject;
-    function read(file:String):String;
-    function readAsync(file:String, ?successHandler:(file:String, output:Dynamic)->Void, ?errorHandler:(error:String)->Void):Void;
-    function getDominoFieldTemplateFile(path:String):String;
+    public function new();
+
+    public var label(default, null):Label;
 }

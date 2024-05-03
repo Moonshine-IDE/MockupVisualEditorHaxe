@@ -29,16 +29,16 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.interfaces;
+package haxeScripts.factory;
 
-import openfl.display.DisplayObject;
-import view.dominoFormBuilder.DominoTabularForm;
+import haxeScripts.interfaces.IFileBridge;
 
-interface IDominoFormBuilderLibraryBridge 
+extern class FileLocation 
 {
-    function getTabularEditorInterfaceWrapper():DominoTabularForm;
-    function getNewMoonshinePopup():DisplayObject;
-    function read(file:String):String;
-    function readAsync(file:String, ?successHandler:(file:String, output:Dynamic)->Void, ?errorHandler:(error:String)->Void):Void;
-    function getDominoFieldTemplateFile(path:String):String;
+    public var fileBridge:IFileBridge;
+    public var name(default, null):String;
+    
+    public function resolvePath(path:String):FileLocation;
+    public function deleteFileOrDirectory():Void;
+    public function new(path:String = null, isURL:Bool = false);
 }

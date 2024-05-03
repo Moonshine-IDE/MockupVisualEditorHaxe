@@ -31,12 +31,179 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import feathers.controls.Radio;
+import feathers.layout.HorizontalLayout;
+import feathers.controls.FormItem;
+import feathers.controls.TextInput;
+import haxeScripts.ui.Line;
+import feathers.events.FormEvent;
+import feathers.controls.Form;
+import feathers.events.GridViewEvent;
+import view.renderers.DeleteGridItemRenderer;
+import view.dominoFormBuilder.vo.DominoFormFieldVO;
+import openfl.events.Event;
+import view.renderers.EditGridItemRenderer;
+import view.renderers.FieldIncludeInGridItemRenderer;
+import feathers.controls.GridViewColumn;
+import feathers.data.ArrayCollection;
+import openfl.display.DisplayObject;
+import feathers.data.GridViewCellState;
+import feathers.utils.DisplayObjectRecycler;
+import feathers.layout.AnchorLayoutData;
+import feathers.controls.GridView;
+import feathers.layout.AnchorLayout;
+import feathers.skins.RectangleSkin;
+import feathers.text.TextFormat;
+import feathers.controls.Label;
+import feathers.layout.VerticalLayoutData;
+import feathers.controls.LayoutGroup;
+import feathers.layout.VerticalLayout;
+import feathers.core.ToggleGroup;
+import feathers.validators.StringValidator;
 import view.dominoFormBuilder.supportClasses.DominoFormBuilderBaseEditor;
+import views.renderers.GridViewColumnMultiline;
 
 class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
+    private var svFormName:StringValidator;
+    private var svViewName:StringValidator;
+    private var rbgWebForm:ToggleGroup;
+    private var dgFields:GridView;
+    private var columnMultilineStateRecycler:DisplayObjectRecycler<Dynamic, GridViewCellState, DisplayObject>;
+    private var visibilityStateRecycler:DisplayObjectRecycler<Dynamic, GridViewCellState, DisplayObject>;
+    private var editRecycler:DisplayObjectRecycler<Dynamic, GridViewCellState, DisplayObject>;
+    private var deleteRecycler:DisplayObjectRecycler<Dynamic, GridViewCellState, DisplayObject>;
+    private var textFormName:TextInput;
+    private var textViewName:TextInput;
+    private var rbWebFormYes:Radio;
+    private var rbWebFormNo:Radio;
+
     public function new()
     {
-        super();   
-    }    
+        super();
+
+        this.columnMultilineStateRecycler = DisplayObjectRecycler.withFunction(() -> {
+            return (new GridViewColumnMultiline());
+		}, (itemRenderer:GridViewColumnMultiline, state:GridViewCellState) -> {
+			itemRenderer.label.text = state.text;
+		},
+		(itemRenderer:GridViewColumnMultiline, state:GridViewCellState) -> {
+			itemRenderer.label.text = "";
+		});
+
+        this.visibilityStateRecycler = DisplayObjectRecycler.withFunction(() -> {
+            return (new FieldIncludeInGridItemRenderer());
+		});
+
+        this.editRecycler = DisplayObjectRecycler.withFunction(() -> {
+			var itemRenderer = new EditGridItemRenderer();
+			itemRenderer.addEventListener(EditGridItemRenderer.EVENT_EDIT, this.onItemEditRequest, false, 0, true);
+			return itemRenderer;
+		}, null, null, (itemRenderer:EditGridItemRenderer) -> {
+			itemRenderer.removeEventListener(EditGridItemRenderer.EVENT_EDIT, this.onItemEditRequest);
+		});
+
+        this.deleteRecycler = DisplayObjectRecycler.withFunction(() -> {
+			var itemRenderer = new DeleteGridItemRenderer();
+			itemRenderer.addEventListener(DeleteGridItemRenderer.EVENT_DELETE, this.onItemDeleteRequest, false, 0, true);
+			return itemRenderer;
+		}, null, null, (itemRenderer:DeleteGridItemRenderer) -> {
+			itemRenderer.removeEventListener(DeleteGridItemRenderer.EVENT_DELETE, this.onItemDeleteRequest);
+		});
+    }
+
+    override private function initialize():Void 
+    {
+        var thisLayout = new VerticalLayout();
+		thisLayout.horizontalAlign = CENTER;
+		thisLayout.gap = 10;
+		this.layout = thisLayout;
+
+        var lblTitle = new Label("New Domino Form");
+        lblTitle.textFormat = new TextFormat("_sans", 24, 0xe252d3);
+        lblTitle.layoutData = new VerticalLayoutData(100);
+        this.addChild(lblTitle);
+
+        var line = new Line();
+        line.layoutData = new VerticalLayoutData(100);
+        this.addChild(line);
+
+        var form = new Form();
+        form.layoutData = new VerticalLayoutData(100);
+        form.addEventListener(FormEvent.SUBMIT, this.onFormSubmit, false, 0, true);
+        this.addChild(form);
+
+        var formNameItem = new FormItem("Form Name", null, true);
+        formNameItem.horizontalAlign = JUSTIFY;
+        this.textFormName = new TextInput();
+        formNameItem.content = this.textFormName;
+        form.addChild(formNameItem);
+
+        var viewNameItem = new FormItem("View Name", null, true);
+        viewNameItem.horizontalAlign = JUSTIFY;
+        this.textViewName = new TextInput();
+        viewNameItem.content = this.textViewName;
+        form.addChild(viewNameItem);
+
+        var webFormItem = new FormItem("Is this a web form?");
+        webFormItem.horizontalAlign = JUSTIFY;
+        var radioContainer = new LayoutGroup();
+        radioContainer.layout = new HorizontalLayout();
+        cast(radioContainer.layout, HorizontalLayout).gap = 10;
+        this.rbWebFormYes = new Radio("Yes");
+        this.rbWebFormYes.toggleGroup = this.rbgWebForm;
+        this.rbWebFormNo = new Radio("No", true);
+        this.rbWebFormNo.toggleGroup = this.rbgWebForm;
+        radioContainer.addChild(this.rbWebFormYes);
+        radioContainer.addChild(this.rbWebFormNo);
+        webFormItem.content = radioContainer;
+        form.addChild(webFormItem);
+
+        var borderedHolder = new LayoutGroup();
+		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0xCCCCCC), SolidColor(1, 0x999999));
+		borderedHolder.layout = new AnchorLayout();
+		borderedHolder.layoutData = new VerticalLayoutData(100, 100);
+		this.addChild(borderedHolder);
+
+        this.dgFields = new GridView();
+        this.dgFields.layoutData = new AnchorLayoutData(30, 30, 30, 30);
+        this.dgFields.variant = GridView.VARIANT_BORDERLESS;
+        this.dgFields.resizableColumns = true;
+        this.dgFields.dragEnabled = true;
+        this.dgFields.dropEnabled = true;
+        this.dgFields.cellRendererRecycler = this.columnMultilineStateRecycler;
+        //this.dgFields.addEventListener(GridViewEvent.CELL_TRIGGER, onGridViewChangeEvent, false, 0, true);
+
+        var columnVisibility = new GridViewColumn("Visible", null, 60);
+        columnVisibility.cellRendererRecycler = this.visibilityStateRecycler;
+        var columnEdit = new GridViewColumn("", null, 100);
+        columnEdit.cellRendererRecycler = this.editRecycler;
+
+        this.dgFields.columns = new ArrayCollection([
+            columnVisibility,
+            new GridViewColumn("Label", (data) -> data.label),
+            new GridViewColumn("Name", (data) -> data.name),
+            new GridViewColumn("Type", (data) -> data.type),
+            columnEdit
+        ]);
+
+        borderedHolder.addChild(this.dgFields);
+
+        super.initialize();
+    }
+
+    private function onItemEditRequest(event:Event):Void
+    {
+		var formObject = cast(cast(event.currentTarget, EditGridItemRenderer).data, DominoFormFieldVO);   
+    }
+
+    private function onItemDeleteRequest(event:Event):Void
+    {
+        var formObject = cast(cast(event.currentTarget, DeleteGridItemRenderer).data, DominoFormFieldVO);
+    }
+
+    private function onFormSubmit(event:FormEvent):Void
+    {
+        
+    }
 }
