@@ -29,22 +29,14 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.supportClasses;
+package view.dominoFormBuilder;
 
-import feathers.layout.VerticalLayout;
-import feathers.controls.LayoutGroup;
+import view.dominoFormBuilder.supportClasses.DominoFormBuilderBaseEditor;
 
-class DominoFormBuilderBaseEditor extends LayoutGroup 
+class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
     public function new()
     {
-        super();
-     }
-
-    override private function initialize():Void 
-    {
-        this.layout = new VerticalLayout();
-
-        super.initialize();
-    }
+        super();   
+    }    
 }

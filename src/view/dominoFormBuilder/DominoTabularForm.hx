@@ -29,21 +29,23 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.supportClasses;
+package view.dominoFormBuilder;
 
-import feathers.layout.VerticalLayout;
+import feathers.skins.RectangleSkin;
+import feathers.layout.AnchorLayout;
 import feathers.controls.LayoutGroup;
 
-class DominoFormBuilderBaseEditor extends LayoutGroup 
+class DominoTabularForm extends LayoutGroup 
 {
     public function new()
     {
         super();
-     }
+    }    
 
     override private function initialize():Void 
     {
-        this.layout = new VerticalLayout();
+        this.layout = new AnchorLayout();
+        this.backgroundSkin = new RectangleSkin(SolidColor(0xf5f5f5));
 
         super.initialize();
     }

@@ -29,22 +29,9 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.supportClasses;
+package view.dominoFormBuilder.vo;
 
-import feathers.layout.VerticalLayout;
-import feathers.controls.LayoutGroup;
-
-class DominoFormBuilderBaseEditor extends LayoutGroup 
+class DominoFormFieldVO 
 {
-    public function new()
-    {
-        super();
-     }
-
-    override private function initialize():Void 
-    {
-        this.layout = new VerticalLayout();
-
-        super.initialize();
-    }
+    public function new() {}    
 }

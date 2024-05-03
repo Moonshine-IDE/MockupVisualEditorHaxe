@@ -29,22 +29,11 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.supportClasses;
+package utils;
 
-import feathers.layout.VerticalLayout;
-import feathers.controls.LayoutGroup;
+import view.interfaces.IDominoFormBuilderLibraryBridge;
 
-class DominoFormBuilderBaseEditor extends LayoutGroup 
+class MoonshineBridgeUtils 
 {
-    public function new()
-    {
-        super();
-     }
-
-    override private function initialize():Void 
-    {
-        this.layout = new VerticalLayout();
-
-        super.initialize();
-    }
+    public static var moonshineBridgeFormBuilderInterface:IDominoFormBuilderLibraryBridge;
 }

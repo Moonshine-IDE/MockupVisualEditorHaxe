@@ -29,21 +29,27 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.supportClasses;
+package view.dominoFormBuilder;
 
 import feathers.layout.VerticalLayout;
 import feathers.controls.LayoutGroup;
 
-class DominoFormBuilderBaseEditor extends LayoutGroup 
+class FormFieldDescriptor extends LayoutGroup 
 {
     public function new()
     {
-        super();
-     }
+        super();   
+    } 
 
     override private function initialize():Void 
     {
-        this.layout = new VerticalLayout();
+        var rootLayout = new VerticalLayout();
+        rootLayout.paddingBottom = 6;
+        rootLayout.paddingLeft = 12;
+        rootLayout.paddingRight = 0;
+        rootLayout.paddingTop = 9;
+        rootLayout.gap = 10;
+        this.layout = rootLayout;
 
         super.initialize();
     }
