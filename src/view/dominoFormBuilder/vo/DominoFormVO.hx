@@ -94,7 +94,7 @@ class DominoFormVO extends EventDispatcher
         xml.set("name", formName);
         
         var tempXML:Xml = Xml.createElement("viewName");
-        tempXML.addChild(Xml.createElement("<![CDATA[" + viewName + "]]>"));
+        tempXML.addChild(Xml.createCData(viewName));
         xml.addChild(tempXML);
         
         tempXML = Xml.createElement("fields");

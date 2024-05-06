@@ -193,19 +193,21 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         borderedHolder.addChild(this.dgFields);
 
+        var footerContainerLayout = new HorizontalLayout();
+        footerContainerLayout.horizontalAlign = RIGHT;
+        footerContainerLayout.gap = 10;
+
         var footerContainer = new LayoutGroup();
-        footerContainer.layout = new HorizontalLayout();
+        footerContainer.layout = footerContainerLayout;
         footerContainer.layoutData = new VerticalLayoutData(100);
         this.addChild(footerContainer);
 
         var btnAdd = new Button("Add");
+        btnAdd.textFormat = new TextFormat("_sans", 13, null, true);
         footerContainer.addChild(btnAdd);
-
-        var spacer = new Spacer();
-		spacer.layoutData = new HorizontalLayoutData(100.0);
-        footerContainer.addChild(spacer);
         
-        var btnSave = new Button("Save &amp; Generate DXL");
+        var btnSave = new Button("Save & Generate DXL");
+        btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
         footerContainer.addChild(btnSave);
 
         super.initialize();

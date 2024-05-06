@@ -91,15 +91,15 @@ class DominoFormFieldVO
         xml.set("isIncludeInView", Std.string(isIncludeInView));
         
         var tempXML = Xml.createElement("label");
-        tempXML.addChild(Xml.createElement("<![CDATA[" + label + "]]>"));
+        tempXML.addChild(Xml.createCData(label));
         xml.addChild(tempXML);
         
         tempXML = Xml.createElement("description");
-        tempXML.addChild(Xml.createElement("<![CDATA[" + description + "]]>"));
+        tempXML.addChild(Xml.createCData(description));
         xml.addChild(tempXML);
         
         tempXML = Xml.createElement("formula");
-        tempXML.addChild(Xml.createElement("<![CDATA[" + formula + "]]>"));
+        tempXML.addChild(Xml.createCData(formula));
         xml.addChild(tempXML);
         
         return xml;
