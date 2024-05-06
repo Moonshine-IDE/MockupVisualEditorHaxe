@@ -31,9 +31,119 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import view.dominoFormBuilder.utils.DominoTemplatesManager;
+import view.dominoFormBuilder.vo.FormBuilderSortingType.SortTypeVO;
+import haxe.xml.Access;
+
 class DominoFormFieldVO 
 {
+    public static final ELEMENT_NAME:String = "field";
+		
+    public var name:String;
+    public var label:String = "";
+    public var description:String = "";
+    public var type:String = FormBuilderFieldType.fieldTypes[0];
+    public var editable:String = FormBuilderEditableType.editableTypes[0];
+    public var formula:String = "";
+    public var sortOption:SortTypeVO = FormBuilderSortingType.sortTypes[0];
+    public var isMultiValue:Bool;
     public var isIncludeInView:Bool = true;
 
-    public function new() {}    
+    public function new() {}
+
+    //--------------------------------------------------------------------------
+    //
+    //  PUBLIC API
+    //
+    //--------------------------------------------------------------------------
+    
+    public function fromXML(accessXML:Access, ?callback:()->Void):Void
+    {
+        this.name = accessXML.att.name;
+        this.type = accessXML.att.type;
+        this.editable = accessXML.att.editable;
+        this.isMultiValue = (accessXML.att.isMultiValue == "true") ? true : false;
+        this.isIncludeInView = (accessXML.att.isIncludeInView == "true") ? true : false;
+        
+        for (sortType in FormBuilderSortingType.sortTypes)
+        {
+            if (accessXML.att.sortOption == sortType.label)
+            {
+                this.sortOption = sortType;
+                break;
+            }
+        }
+        
+        this.label = accessXML.node.label.innerData;
+        this.description = accessXML.node.description.innerData;
+        this.formula = accessXML.node.formula.innerData;
+    }
+    
+    public function toXML():Xml
+    {
+        var xml:Xml = Xml.createElement(ELEMENT_NAME);
+        
+        xml.set("name", name);
+        xml.set("type", type);
+        xml.set("editable", editable);
+        xml.set("sortOption", sortOption.label);
+        xml.set("isMultiValue", Std.string(isMultiValue));
+        xml.set("isIncludeInView", Std.string(isIncludeInView));
+        
+        var tempXML = Xml.createElement("label");
+        tempXML.addChild(Xml.createElement("<![CDATA[" + label + "]]>"));
+        xml.addChild(tempXML);
+        
+        tempXML = Xml.createElement("description");
+        tempXML.addChild(Xml.createElement("<![CDATA[" + description + "]]>"));
+        xml.addChild(tempXML);
+        
+        tempXML = Xml.createElement("formula");
+        tempXML.addChild(Xml.createElement("<![CDATA[" + formula + "]]>"));
+        xml.addChild(tempXML);
+        
+        return xml;
+    }
+    
+    //--------------------------------------------------------------------------
+    //
+    //  DXL/XML
+    //
+    //--------------------------------------------------------------------------
+    
+    public function toCode():String
+    {
+        var row:String = DominoTemplatesManager.getTableRowTemplate();
+        var cell:String = DominoTemplatesManager.getTableCellTemplate();
+        
+        // for now until Dmytro provides
+        // template of table-row having predefined
+        // table-column/cell, we'll generate manual 3
+        var tmpAllColumns:String = "";
+        var tmpField:String;
+        var ereg:EReg = null;
+        for (i in 0...3)
+        {
+            ereg = ~/%cellbody%/ig;
+            tmpAllColumns = ereg.replace(cell, label);
+            
+            tmpField = DominoTemplatesManager.getFieldTemplate(type, isMultiValue, editable);
+            if (tmpField != null)
+            {
+                ereg = ~/%fieldname%/ig;
+                tmpField = ereg.replace(tmpField, name);
+                ereg = ~/%computedvalue%/ig;
+                tmpField = ereg.replace(tmpField, formula);
+            }
+
+            ereg = ~/%cellbody%/ig;
+            tmpAllColumns += ereg.replace(cell, (tmpField != null) ? tmpField : '');
+            ereg = ~/%cellbody%/ig;
+            tmpAllColumns += ereg.replace(cell, description);
+        }
+        
+        ereg = ~/%cells%/ig;
+        row = ereg.replace(row, tmpAllColumns);
+        return row;
+    }
 }

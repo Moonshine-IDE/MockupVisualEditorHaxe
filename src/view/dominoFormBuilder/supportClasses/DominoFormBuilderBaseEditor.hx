@@ -31,12 +31,104 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.supportClasses;
 
+import openfl.events.Event;
+import view.supportClasses.events.PropertyEditorChangeEvent;
+import view.dominoFormBuilder.utils.FormBuilderCodeUtils;
+import view.dominoFormBuilder.vo.DominoFormVO;
 import feathers.controls.LayoutGroup;
 
 class DominoFormBuilderBaseEditor extends LayoutGroup 
 {
+    public var tabularTab:DominoTabularForm;
+
+    private var _dominoForm:DominoFormVO;
+    public var dominoForm(get, set):DominoFormVO;
+    private function get_dominoForm():DominoFormVO
+    {
+        return _dominoForm;   
+    }
+    private function set_dominoForm(value:DominoFormVO):DominoFormVO
+    {
+        _dominoForm = value;
+        return _dominoForm;   
+    }
+
+    private var _filePath:String;
+    public var filePath(get, set):String;
+    private function get_filePath():String
+    {
+        return _filePath;   
+    }
+    private function set_filePath(value:String):String
+    {
+        if (_filePath != value)
+        {
+            _filePath = value;
+            this.retrieveFromFile();   
+        }
+        return _filePath;
+    }
+
     public function new()
     {
         super();
-     }
+    }
+
+    public var formXML(get, never):Xml;
+    private function get_formXML():Xml
+    {
+        return dominoForm.toXML();
+    }
+    
+    public var formDXL(get, never):Xml;
+    private function get_formDXL():Xml
+    {
+        return FormBuilderCodeUtils.toDominoCode(dominoForm);
+    }
+    
+    public var viewDXL(get, never):Xml;
+    private function get_viewDXL():Xml
+    {
+        return FormBuilderCodeUtils.toViewCode(dominoForm);
+    }
+    
+    public function release():Void
+    {
+        this.removeChangeListeners();
+    }
+
+    public function retrieveFromFile():Void
+    {
+        FormBuilderCodeUtils.loadFromFile(filePath, dominoForm, addChangeListeners);
+    }
+
+    //--------------------------------------------------------------------------
+    //
+    //  PRIVATE API
+    //
+    //--------------------------------------------------------------------------
+    
+    private function addChangeListeners():Void
+    {
+        this.removeChangeListeners();
+        
+        //this.dominoForm.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onFormPropertyChanged);
+        this.dominoForm.fields.addEventListener(Event.CHANGE, onFormFieldsCollectionChanged);
+    }
+    
+    private function removeChangeListeners():Void
+    {
+        //this.dominoForm.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onFormPropertyChanged);
+        this.dominoForm.fields.removeEventListener(Event.CHANGE, onFormFieldsCollectionChanged);
+    }
+    
+    private function onFormPropertyChanged(event:Event):Void
+    {
+        this.tabularTab.dispatchEvent(new PropertyEditorChangeEvent(PropertyEditorChangeEvent.PROPERTY_EDITOR_CHANGED, null));
+    }
+    
+    private function onFormFieldsCollectionChanged(event:Event):Void
+    {
+        this.onFormPropertyChanged(null);
+    }
 }

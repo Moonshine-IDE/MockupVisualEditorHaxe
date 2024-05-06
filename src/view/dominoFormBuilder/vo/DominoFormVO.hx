@@ -31,12 +31,148 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import view.dominoFormBuilder.utils.DominoTemplatesManager;
+import haxe.xml.Access;
+import feathers.data.ArrayCollection;
 import openfl.events.EventDispatcher;
 
 class DominoFormVO extends EventDispatcher 
 {
+    public static final ELEMENT_NAME:String = "form";
+		
+    public var formName:String;
+    public var viewName:String;
+    public var hasWebAccess:Bool;
+    public var fields:ArrayCollection<DominoFormFieldVO> = new ArrayCollection();
+    public var dxlGeneratedOn:Date;
+    public var pageContent:Xml;
+    public var isSubForm:Bool;
+    public var subFormsNames:Array<String>;
+
     public function new()
     {
         super();
     }    
+
+    //--------------------------------------------------------------------------
+    //
+    //  PUBLIC API
+    //
+    //--------------------------------------------------------------------------
+    
+    public function fromXML(value:Xml, callback:()->Void):Void
+    {
+        var accessXML = new Access(value);
+        
+        this.formName = accessXML.node.root.node.form.att.name;
+        this.hasWebAccess = (accessXML.node.root.node.form.att.hasWebAccess == "true") ? true : false;
+        this.viewName = accessXML.node.root.node.form.node.viewName.innerData;
+        if (accessXML.node.root.node.form.has.dxlGeneratedOn)
+        {
+            this.dxlGeneratedOn = Date.fromString(
+                accessXML.node.root.node.form.att.dxlGeneratedOn
+            );
+        }
+        
+        for (field in accessXML.node.root.node.form.node.fields.nodes.field)
+        {
+            var tmpField:DominoFormFieldVO = new DominoFormFieldVO();
+            tmpField.fromXML(field);
+            fields.add(tmpField);
+        }
+        
+        if (callback != null)
+        {
+            callback();
+        }
+    }
+    
+    public function toXML():Xml
+    {
+        var xml:Xml = Xml.createElement(ELEMENT_NAME);
+        xml.set("hasWebAccess", Std.string(hasWebAccess));
+        xml.set("name", formName);
+        
+        var tempXML:Xml = Xml.createElement("viewName");
+        tempXML.addChild(Xml.createElement("<![CDATA[" + viewName + "]]>"));
+        xml.addChild(tempXML);
+        
+        tempXML = Xml.createElement("fields");
+        for (field in fields)
+        {
+            tempXML.addChild(field.toXML());
+        }
+        xml.addChild(tempXML);
+        
+        if (dxlGeneratedOn == null) dxlGeneratedOn = Date.now();
+        xml.set("dxlGeneratedOn", dxlGeneratedOn.toString());
+        return xml;
+    }
+    
+    //--------------------------------------------------------------------------
+    //
+    //  DXL/XML
+    //
+    //--------------------------------------------------------------------------
+    
+    public function toCode():String
+    {
+        var table:String = DominoTemplatesManager.getTableTemplate();
+        
+        // generate rows/columns
+        var tmpRows:String = "";
+        for (field in fields)
+        {
+            tmpRows += field.toCode();
+        }
+        
+        var ereg:EReg = ~/%rows%/ig;
+        table = ereg.replace(table, tmpRows);
+        return table;
+    }
+    
+    public function toViewColumnsCode():String
+    {
+        var column:String = DominoTemplatesManager.getViewColumn();
+        
+        // generate rows/columns
+        var tmpColumns:String = "";
+        var tmpColumn:String = "";
+        var ereg:EReg = null;
+        for (field in fields)
+        {
+            if (field.isIncludeInView)
+            {
+                ereg = ~/%fieldname%/ig;
+                tmpColumn = ereg.replace(column, field.name);
+                ereg = ~/%sort%/ig;
+                tmpColumn = ereg.replace(column, field.sortOption.value);
+                ereg = ~/%categorized%/ig;
+                tmpColumn = ereg.replace(column, Std.string(field.sortOption.isCategorized));
+                ereg = ~/%label%/ig;
+                tmpColumn = ereg.replace(column, field.label);
+                
+                tmpColumns += tmpColumn;
+            }
+        }
+        
+        return tmpColumns;
+    }
+
+    public function toSubformVOExtends():String
+    {
+        var subformVOInterfaces:String = "";
+        if (subFormsNames != null && subFormsNames.length > 0)
+        {
+            var subFormsNamesCount:Int = subFormsNames.length;
+            for (i in 0...subFormsNamesCount)
+            {
+                var subformName:String = subFormsNames[i];
+                var nextInterfaceColon:String = i == subFormsNamesCount - 1 ? "" : ",";
+                subformVOInterfaces += "I" + subformName + "VO" + nextInterfaceColon;
+            }
+        }
+
+        return subformVOInterfaces;
+    }
 }

@@ -31,7 +31,61 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.utils;
 
+import utils.MoonshineBridgeUtils;
+import view.dominoFormBuilder.vo.DominoFormVO;
+
 class FormBuilderCodeUtils 
 {
+    public static function loadFromFile(path:String, toFormObject:DominoFormVO, ?onSuccess:()->Void):Void
+    {
+        function successHandler(file:String, output:Dynamic)
+        {
+            if (output != null)
+            {
+                toFormObject.fromXML(Xml.parse(output), onSuccess);
+            }
+            else if (onSuccess != null)
+            {
+                onSuccess();
+            }
+        } 
+        function errorHandler(error:String)
+        {
+            if (onSuccess != null) 
+                onSuccess();
+        }
+        
+        MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.readAsync(path, successHandler, errorHandler);
+    }
+
+    public static function toDominoCode(formObject:DominoFormVO):Xml
+    {
+        var form:String = DominoTemplatesManager.getFormTemplate();
+        var par:String = DominoTemplatesManager.getFormParTemplate();
+        
+        var ereg:EReg = ~/%value%/ig;
+        var formBody:String = ereg.replace(par, formObject.viewName);
+        formBody += formObject.toCode();
+        
+        ereg = ~/%formname%/ig;
+        form = ereg.replace(form, formObject.formName);
+        ereg = ~/%frombody%/ig;
+        form = ereg.replace(form, formBody);
+        
+        return Xml.parse(form);
+    }
     
+    public static function toViewCode(formObject:DominoFormVO):Xml
+    {
+        var view:String = DominoTemplatesManager.getViewTemplate();
+
+        var ereg:EReg = ~/%viewname%/ig;
+        view = ereg.replace(view, formObject.viewName);
+        ereg = ~/%formname%/ig;
+        view = ereg.replace(view, formObject.formName);
+        ereg = ~/%columns%/ig;
+        view = ereg.replace(view, formObject.toViewColumnsCode());
+        
+        return Xml.parse(view);
+    }
 }

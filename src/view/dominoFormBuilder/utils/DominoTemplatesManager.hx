@@ -31,37 +31,39 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.utils;
 
+import utils.MoonshineBridgeUtils;
+import view.dominoFormBuilder.vo.DominoTemplateResourceName;
 import haxe.Resource;
 
 class DominoTemplatesManager
 {
     public static function getFormTemplate():String
     {
-        var templateFile:String = "form.dxl";
+        var templateFile:String = DominoTemplateResourceName.FORM;
         return readAndReturnAsString(templateFile);
     }
     
     public static function getFormParTemplate():String
     {
-        var templateFile = "form-par.dxl";
+        var templateFile = DominoTemplateResourceName.FORM_PAR;
         return readAndReturnAsString(templateFile);
     }
     
     public static function getTableTemplate():String
     {
-        var templateFile = "table.dxl";
+        var templateFile = DominoTemplateResourceName.TABLE;
         return readAndReturnAsString(templateFile);
     }
     
     public static function getTableRowTemplate():String
     {
-        var templateFile = "table-row.dxl";
+        var templateFile = DominoTemplateResourceName.TABLE_ROW;
         return readAndReturnAsString(templateFile);
     }
     
     public static function getTableCellTemplate():String
     {
-        var templateFile = "table-cell.dxl";
+        var templateFile = DominoTemplateResourceName.TABLE_CELL;
         return readAndReturnAsString(templateFile);
     }
     
@@ -89,21 +91,18 @@ class DominoTemplatesManager
     
     public static function getViewTemplate():String
     {
-        var templateFile = "view.dxl";
+        var templateFile = DominoTemplateResourceName.VIEW;
         return readAndReturnAsString(templateFile);
     }
     
     public static function getViewColumn():String
     {
-        var templateFile = "view-column.dxl";
+        var templateFile = DominoTemplateResourceName.VIEW_COLUMN;
         return readAndReturnAsString(templateFile);
     }
     
     private static function readAndReturnAsString(path:String):String
     {
-        #if !html5
-            // File api read?
-        #end
-        return Resource.getString(path);
+        return MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.getDominoFieldTemplateFile(path);
     }
 }

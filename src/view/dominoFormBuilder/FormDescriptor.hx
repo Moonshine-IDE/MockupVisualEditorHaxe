@@ -31,6 +31,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import view.dominoFormBuilder.supportClasses.events.VisualEditorEvent;
+import feathers.validators.Validator;
+import feathers.layout.HorizontalLayoutData;
+import haxeScripts.ui.Spacer;
+import feathers.controls.Button;
 import feathers.controls.Radio;
 import feathers.layout.HorizontalLayout;
 import feathers.controls.FormItem;
@@ -38,7 +43,6 @@ import feathers.controls.TextInput;
 import haxeScripts.ui.Line;
 import feathers.events.FormEvent;
 import feathers.controls.Form;
-import feathers.events.GridViewEvent;
 import view.renderers.DeleteGridItemRenderer;
 import view.dominoFormBuilder.vo.DominoFormFieldVO;
 import openfl.events.Event;
@@ -189,7 +193,42 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         borderedHolder.addChild(this.dgFields);
 
+        var footerContainer = new LayoutGroup();
+        footerContainer.layout = new HorizontalLayout();
+        footerContainer.layoutData = new VerticalLayoutData(100);
+        this.addChild(footerContainer);
+
+        var btnAdd = new Button("Add");
+        footerContainer.addChild(btnAdd);
+
+        var spacer = new Spacer();
+		spacer.layoutData = new HorizontalLayoutData(100.0);
+        footerContainer.addChild(spacer);
+        
+        var btnSave = new Button("Save &amp; Generate DXL");
+        footerContainer.addChild(btnSave);
+
         super.initialize();
+    }
+
+    public function validateForm():Bool
+    {
+        // validation test
+        var isAllRight = true;
+        var events = Validator.validateAll([this.svFormName, this.svViewName]);
+        for (validatorEvent in events)
+        {
+            for (validationResult in validatorEvent.results)
+            {
+                if (validationResult.isError)
+                {
+                    isAllRight = false;
+                    break;
+                }   
+            }
+        }
+
+        return isAllRight;
     }
 
     private function onItemEditRequest(event:Event):Void
@@ -204,6 +243,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onFormSubmit(event:FormEvent):Void
     {
-        
+        if (this.validateForm())
+        {
+            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_CODE));
+        }
     }
 }

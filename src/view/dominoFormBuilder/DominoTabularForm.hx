@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import view.dominoFormBuilder.vo.DominoFormVO;
 import feathers.layout.VerticalLayoutData;
 import feathers.layout.VerticalLayout;
 import feathers.layout.AnchorLayoutData;
@@ -42,6 +43,8 @@ import feathers.controls.LayoutGroup;
 
 class DominoTabularForm extends LayoutGroup 
 {
+    public var filePath:String;
+
     public var moonshineBridge(get, set):IDominoFormBuilderLibraryBridge;
     private function set_moonshineBridge(value:IDominoFormBuilderLibraryBridge):IDominoFormBuilderLibraryBridge
     {
@@ -52,6 +55,38 @@ class DominoTabularForm extends LayoutGroup
     {
         return MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface;
     }
+
+    public var isFormValid(get, never):Bool;
+    private function get_isFormValid():Bool
+    {
+        return formDescriptor.validateForm();
+    }
+    
+    public var formXML(get, never):Xml;
+    private function get_formXML():Xml
+    {
+        return formDescriptor.formXML;
+    }
+    
+    public var formDXL(get, never):Xml;
+    private function get_formDXL():Xml
+    {
+        return formDescriptor.formDXL;
+    }
+    
+    public var viewDXL(get, never):Xml;
+    private function get_viewDXL():Xml
+    {
+        return formDescriptor.viewDXL;
+    }
+    
+    public var formObject(get, never):DominoFormVO;
+    private function get_formObject():DominoFormVO
+    {
+        return formDescriptor.dominoForm;
+    }
+    
+    private var formDescriptor:FormDescriptor;
 
     public function new()
     {
@@ -68,10 +103,18 @@ class DominoTabularForm extends LayoutGroup
 
 		this.layout = thisLayout;
 
-        var formDescriptor = new FormDescriptor();
+        formDescriptor = new FormDescriptor();
         formDescriptor.layoutData = new VerticalLayoutData(60, 100);
+        formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);
 
         super.initialize();
+
+        formDescriptor.filePath = this.filePath;
+    }
+
+    public function release():Void
+    {
+        formDescriptor.release();
     }
 }
