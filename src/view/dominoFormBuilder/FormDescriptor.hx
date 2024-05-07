@@ -31,6 +31,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import feathers.controls.Alert;
+import feathers.events.TriggerEvent;
+import feathers.core.PopUpManager;
+import feathers.controls.Application;
+import feathers.core.InvalidationFlag;
 import view.dominoFormBuilder.supportClasses.events.VisualEditorEvent;
 import feathers.validators.Validator;
 import feathers.layout.HorizontalLayoutData;
@@ -178,17 +183,20 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.dgFields.cellRendererRecycler = this.columnMultilineStateRecycler;
         //this.dgFields.addEventListener(GridViewEvent.CELL_TRIGGER, onGridViewChangeEvent, false, 0, true);
 
-        var columnVisibility = new GridViewColumn("Visible", null, 60);
+        var columnVisibility = new GridViewColumn("", null, 60);
         columnVisibility.cellRendererRecycler = this.visibilityStateRecycler;
         var columnEdit = new GridViewColumn("", null, 100);
         columnEdit.cellRendererRecycler = this.editRecycler;
+        var columnDelete = new GridViewColumn("", null, 100);
+        columnDelete.cellRendererRecycler = this.deleteRecycler;
 
         this.dgFields.columns = new ArrayCollection([
             columnVisibility,
             new GridViewColumn("Label", (data) -> data.label),
             new GridViewColumn("Name", (data) -> data.name),
             new GridViewColumn("Type", (data) -> data.type),
-            columnEdit
+            columnEdit,
+            columnDelete
         ]);
 
         borderedHolder.addChild(this.dgFields);
@@ -204,6 +212,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         var btnAdd = new Button("Add");
         btnAdd.textFormat = new TextFormat("_sans", 13, null, true);
+        btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
         
         var btnSave = new Button("Save & Generate DXL");
@@ -211,6 +220,17 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         footerContainer.addChild(btnSave);
 
         super.initialize();
+    }
+
+    override private function update():Void 
+    {
+        var dataInvalid = this.isInvalid(InvalidationFlag.DATA);
+        if (dataInvalid) 
+        {
+            this.dgFields.dataProvider = this.dominoForm.fields;
+        }
+
+        super.update();
     }
 
     public function validateForm():Bool
@@ -235,12 +255,32 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onItemEditRequest(event:Event):Void
     {
-		var formObject = cast(cast(event.currentTarget, EditGridItemRenderer).data, DominoFormFieldVO);   
+		var formObject = cast(cast(event.currentTarget, EditGridItemRenderer).data, DominoFormFieldVO);
+        this.onItemAddEdit(formObject);
+    }
+
+    private function onItemAddRequest(event:TriggerEvent):Void
+    {
+        this.onItemAddEdit();   
     }
 
     private function onItemDeleteRequest(event:Event):Void
     {
         var formObject = cast(cast(event.currentTarget, DeleteGridItemRenderer).data, DominoFormFieldVO);
+        Alert.show("Confirm delete field?", "Warning!", ["Yes", "No"], (state) -> {
+            if (state.text == "Yes") 
+                dominoForm.fields.remove(formObject);
+        });
+    }
+
+    private function onItemAddEdit(?item:DominoFormFieldVO):Void
+    {
+        var addEditField = new FormFieldDescriptor();
+        addEditField.addEventListener(FormFieldDescriptor.EVENT_FORM_SUBMITS, onFormSubmits, false, 0, true);
+        addEditField.editItem = item;
+        addEditField.width = Application.topLevelApplication.width * .5;
+        addEditField.height = Application.topLevelApplication.height * .8;
+        PopUpManager.addPopUp(addEditField, Application.topLevelApplication);
     }
 
     private function onFormSubmit(event:FormEvent):Void
@@ -249,5 +289,14 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         {
             tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_CODE));
         }
+    }
+
+    private function onFormSubmits(event:Event):Void
+    {
+        var editingItem = cast(event.currentTarget, FormFieldDescriptor).editItem;
+        cast(event.currentTarget, FormFieldDescriptor).removeEventListener(FormFieldDescriptor.EVENT_FORM_SUBMITS, onFormSubmits);
+
+        if (this.dominoForm.fields.indexOf(editingItem) == -1) 
+            this.dominoForm.fields.add(editingItem);
     }
 }

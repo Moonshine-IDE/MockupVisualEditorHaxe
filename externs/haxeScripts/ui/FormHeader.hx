@@ -29,26 +29,11 @@
 //  it in the license file.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package view.dominoFormBuilder.vo;
+package haxeScripts.ui;
 
-import feathers.data.ArrayCollection;
+import feathers.controls.LayoutGroup;
 
-enum abstract FormBuilderFieldType(String) to String 
+extern class FormHeader extends LayoutGroup 
 {
-    var TEXT = "Text";
-    var RICH_TEXT = "Richtext";
-    var NUMBER = "Number";
-    var DATETIME = "Datetime";
-
-    private static var _fieldTypes:ArrayCollection<FormBuilderFieldType>;
-    public static var fieldTypes(get, never):ArrayCollection<FormBuilderFieldType>;
-    private static function get_fieldTypes():ArrayCollection<FormBuilderFieldType>
-    {
-        if (_fieldTypes == null)
-        {
-            _fieldTypes = new ArrayCollection([TEXT, RICH_TEXT, NUMBER, DATETIME]);
-        }
-        
-        return _fieldTypes;
-    }
+    public function new(text:String = "");
 }

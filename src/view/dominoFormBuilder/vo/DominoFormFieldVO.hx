@@ -42,10 +42,10 @@ class DominoFormFieldVO
     public var name:String;
     public var label:String = "";
     public var description:String = "";
-    public var type:String = FormBuilderFieldType.fieldTypes[0];
-    public var editable:String = FormBuilderEditableType.editableTypes[0];
+    public var type:String = FormBuilderFieldType.fieldTypes.get(0);
+    public var editable:String = FormBuilderEditableType.editableTypes.get(0);
     public var formula:String = "";
-    public var sortOption:SortTypeVO = FormBuilderSortingType.sortTypes[0];
+    public var sortOption:SortTypeVO = FormBuilderSortingType.sortTypes.get(0);
     public var isMultiValue:Bool;
     public var isIncludeInView:Bool = true;
 

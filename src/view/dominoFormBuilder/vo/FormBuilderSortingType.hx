@@ -31,21 +31,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import feathers.data.ArrayCollection;
+
 class FormBuilderSortingType
 {
-    private static var _sortTypes:Array<SortTypeVO>;
-    public static var sortTypes(get, never):Array<SortTypeVO>;
-    private static function get_sortTypes():Array<SortTypeVO>
+    private static var _sortTypes:ArrayCollection<SortTypeVO>;
+    public static var sortTypes(get, never):ArrayCollection<SortTypeVO>;
+    private static function get_sortTypes():ArrayCollection<SortTypeVO>
     {
         if (_sortTypes == null)
         {
-            _sortTypes = [
+            _sortTypes = new ArrayCollection([
                 new SortTypeVO("No sorting", "none"),
                 new SortTypeVO("Ascending", "ascending"),
                 new SortTypeVO("Descending", "descending"),
                 new SortTypeVO("Categorized (Ascending)", "ascending", true),
                 new SortTypeVO("Categorized (Descending)", "descending", true)
-            ];
+            ]);
         }
         
         return _sortTypes;

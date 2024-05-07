@@ -17,6 +17,7 @@ class FieldIncludeInGridItemRenderer extends LayoutGroupItemRenderer
 
 		this.alEye = new AssetLoader("assets/eye.png");
         this.alEye.width = this.alEye.height = 16;
+        this.alEye.toolTip = "Included in View";
         this.alEye.layoutData = AnchorLayoutData.center();
         this.addChild(alEye);
 

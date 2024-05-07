@@ -1,5 +1,6 @@
 package view.renderers;
 
+import openfl.events.MouseEvent;
 import openfl.events.Event;
 import feathers.events.TriggerEvent;
 import feathers.layout.AnchorLayoutData;
@@ -19,13 +20,14 @@ class EditGridItemRenderer extends LayoutGroupItemRenderer
         alEdit.width = alEdit.height = 16;
         alEdit.layoutData = AnchorLayoutData.center();
         alEdit.buttonMode = true;
-        alEdit.addEventListener(TriggerEvent.TRIGGER, onEditButton, false, 0, true);
+        alEdit.doubleClickEnabled = false;
+        alEdit.addEventListener(MouseEvent.CLICK, onEditButton, false, 0, true);
         this.addChild(alEdit);
 
 		super.initialize();
 	}
 
-    private function onEditButton(event:TriggerEvent):Void 
+    private function onEditButton(event:MouseEvent):Void 
     {
         this.dispatchEvent(new Event(EVENT_EDIT));
     }

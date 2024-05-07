@@ -42,7 +42,7 @@ class FormBuilderCodeUtils
         {
             if (output != null)
             {
-                toFormObject.fromXML(Xml.parse(output), onSuccess);
+                toFormObject.fromXML(Xml.parse(StringTools.trim(Std.string(output))), onSuccess);
             }
             else if (onSuccess != null)
             {

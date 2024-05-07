@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.supportClasses;
 
+import feathers.core.InvalidationFlag;
 import openfl.events.Event;
 import view.supportClasses.events.PropertyEditorChangeEvent;
 import view.dominoFormBuilder.utils.FormBuilderCodeUtils;
@@ -41,7 +42,7 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
 {
     public var tabularTab:DominoTabularForm;
 
-    private var _dominoForm:DominoFormVO;
+    private var _dominoForm:DominoFormVO = new DominoFormVO();
     public var dominoForm(get, set):DominoFormVO;
     private function get_dominoForm():DominoFormVO
     {
@@ -115,6 +116,8 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
         
         //this.dominoForm.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onFormPropertyChanged);
         this.dominoForm.fields.addEventListener(Event.CHANGE, onFormFieldsCollectionChanged);
+
+        this.setInvalid(InvalidationFlag.DATA);
     }
     
     private function removeChangeListeners():Void

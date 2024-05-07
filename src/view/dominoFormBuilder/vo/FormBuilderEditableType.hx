@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import feathers.data.ArrayCollection;
+
 enum abstract FormBuilderEditableType(String) to String 
 {
     var EDITABLE = "Editable";
@@ -38,25 +40,25 @@ enum abstract FormBuilderEditableType(String) to String
     var COMPUTE_ON_COMPOSE = "Compute on compose";
     var COMPUTE_FOR_DISPLAY = "Compute for display";
 
-    private static var _editableTypes:Array<FormBuilderEditableType>;
-    public static var editableTypes(get, never):Array<FormBuilderEditableType>;
-    private static function get_editableTypes():Array<FormBuilderEditableType>
+    private static var _editableTypes:ArrayCollection<FormBuilderEditableType>;
+    public static var editableTypes(get, never):ArrayCollection<FormBuilderEditableType>;
+    private static function get_editableTypes():ArrayCollection<FormBuilderEditableType>
     {
         if (_editableTypes == null)
         {
-            _editableTypes = [EDITABLE, COMPUTED, COMPUTE_ON_COMPOSE, COMPUTE_FOR_DISPLAY];
+            _editableTypes = new ArrayCollection([EDITABLE, COMPUTED, COMPUTE_ON_COMPOSE, COMPUTE_FOR_DISPLAY]);
         }
         
         return _editableTypes;
     }
 
-    private static var _editableTypesRichtext:Array<FormBuilderEditableType>;
-    public static var editableTypesRichtext(get, never):Array<FormBuilderEditableType>;
-    private static function get_editableTypesRichtext():Array<FormBuilderEditableType>
+    private static var _editableTypesRichtext:ArrayCollection<FormBuilderEditableType>;
+    public static var editableTypesRichtext(get, never):ArrayCollection<FormBuilderEditableType>;
+    private static function get_editableTypesRichtext():ArrayCollection<FormBuilderEditableType>
     {
         if (_editableTypesRichtext == null)
         {
-            _editableTypesRichtext = [EDITABLE, COMPUTED];
+            _editableTypesRichtext = new ArrayCollection([EDITABLE, COMPUTED]);
         }
         
         return _editableTypesRichtext;

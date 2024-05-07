@@ -69,9 +69,9 @@ class DominoFormVO extends EventDispatcher
         this.viewName = accessXML.node.root.node.form.node.viewName.innerData;
         if (accessXML.node.root.node.form.has.dxlGeneratedOn)
         {
-            this.dxlGeneratedOn = Date.fromString(
+            /*this.dxlGeneratedOn = Date.fromString(
                 accessXML.node.root.node.form.att.dxlGeneratedOn
-            );
+            );*/
         }
         
         for (field in accessXML.node.root.node.form.node.fields.nodes.field)
