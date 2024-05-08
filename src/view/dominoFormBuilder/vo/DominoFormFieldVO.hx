@@ -74,9 +74,9 @@ class DominoFormFieldVO
             }
         }
         
-        this.label = accessXML.node.label.innerData;
-        this.description = accessXML.node.description.innerData;
-        this.formula = accessXML.node.formula.innerData;
+        try { this.label = accessXML.node.label.innerData; } catch (e) {}
+        try { this.description = accessXML.node.description.innerData; } catch (e) {}
+        try { this.formula = accessXML.node.formula.innerData; } catch (e) {}
     }
     
     public function toXML():Xml

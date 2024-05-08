@@ -36,14 +36,17 @@ import openfl.events.Event;
 class VisualEditorEvent extends Event 
 {
     public static final SAVE_CODE:String = "saveCode";
+    public static final SAVE_NEW_FORM:String = "saveNewForm";
 
-    public function new(type:String)
+    public var data:Dynamic;
+    public function new(type:String, ?data:Dynamic)
     {
         super(type);
+        this.data = data;
     }
 
     override public function clone():Event 
     {
-        return new VisualEditorEvent(this.type);
+        return new VisualEditorEvent(this.type, this.data);
     }
 }

@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import views.popups.PopupAuthentication;
+import haxeScripts.locator.AppModelLocator;
 import feathers.controls.Alert;
 import feathers.events.TriggerEvent;
 import feathers.core.PopUpManager;
@@ -74,6 +76,7 @@ import views.renderers.GridViewColumnMultiline;
 
 class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
+    private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
     private var svViewName:StringValidator;
     private var rbgWebForm:ToggleGroup;
@@ -145,6 +148,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         var formNameItem = new FormItem("Form Name", null, true);
         formNameItem.horizontalAlign = JUSTIFY;
         this.textFormName = new TextInput();
+        this.textFormName.restrict = "0-9A-Za-z_";
         formNameItem.content = this.textFormName;
         form.addChild(formNameItem);
 
@@ -219,6 +223,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
         footerContainer.addChild(btnSave);
 
+        form.submitButton = btnSave;
+
         super.initialize();
     }
 
@@ -227,6 +233,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         var dataInvalid = this.isInvalid(InvalidationFlag.DATA);
         if (dataInvalid) 
         {
+            this.textFormName.text = this.dominoForm.formName;
+            this.textViewName.text = this.dominoForm.viewName;
             this.dgFields.dataProvider = this.dominoForm.fields;
         }
 
@@ -287,8 +295,54 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     {
         if (this.validateForm())
         {
+            if (!this.performPreSaveChecks()) 
+                return;
+
+            this.dominoForm.formName = this.textFormName.text;
+            this.dominoForm.viewName = this.textViewName.text;
             tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_CODE));
         }
+    }
+
+    private function performPreSaveChecks():Bool
+    {
+        // when we needs this 
+        // - user not authenticated
+        // - user trying to save default form
+        // - user trying to save new form
+        if (this.appModelLocator.currentUser == null || this.filePath == null)
+        {
+            var authWindow = new PopupAuthentication();
+            authWindow.addEventListener(Event.CLOSE, onUserAuthenticated, false, 0, true);
+            authWindow.fileName = this.textFormName.text + ".dfb";
+            authWindow.isNeedsLogin = (this.appModelLocator.currentUser == null);
+            authWindow.isNeedsFileNameSave = (this.filePath == null);
+            authWindow.width = 400;
+            authWindow.height = (authWindow.isNeedsFileNameSave && authWindow.isNeedsLogin) ? 186 : 136;
+            PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
+            return false;
+        }
+
+        return true;
+    }
+
+    private function onUserAuthenticated(event:Event):Void
+    {
+        var authWindow = cast(event.currentTarget, PopupAuthentication);
+		authWindow.removeEventListener(Event.CLOSE, onUserAuthenticated);
+
+        if (authWindow.isCancelled) 
+			return;
+
+        if (authWindow.isNeedsFileNameSave) 
+        {
+            this._filePath = "/opt/moonshineweb/users/"+ AppModelLocator.getInstance().currentUser +"/formbuilder/"+ authWindow.fileName;
+            trace(this.filePath);
+            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, authWindow.fileName));
+        }
+        
+		// re-run the process
+		this.onFormSubmit(null);
     }
 
     private function onFormSubmits(event:Event):Void
