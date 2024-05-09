@@ -40,11 +40,11 @@ extern class IFileBridge
 	public var nativePath(default, default):String;
 	public var extension(default, default):String;
 	public var name(default, default):String;
-	public var nameWithoutExtension(default, null):String;
-	public var parent(default, default):FileLocation;
-	public var exists(default, null):Bool;
+	public var nameWithoutExtension(default, never):String;
+	public var parent(default, never):FileLocation;
+	public var exists(default, never):Bool;
 	public var isDirectory(default, default):Bool;
-	public var separator(default, default):String;
+	public var separator(default, never):String;
 
 	public function read():Dynamic;
 	public function canonicalize():Void;
