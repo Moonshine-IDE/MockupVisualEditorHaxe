@@ -65,8 +65,6 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
         if (_filePath != value)
         {
             _filePath = value;
-            if (_filePath != null) 
-                this.retrieveFromFile();   
         }
         return _filePath;
     }

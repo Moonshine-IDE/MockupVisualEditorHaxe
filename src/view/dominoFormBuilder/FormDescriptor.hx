@@ -40,8 +40,6 @@ import feathers.controls.Application;
 import feathers.core.InvalidationFlag;
 import view.dominoFormBuilder.supportClasses.events.VisualEditorEvent;
 import feathers.validators.Validator;
-import feathers.layout.HorizontalLayoutData;
-import haxeScripts.ui.Spacer;
 import feathers.controls.Button;
 import feathers.controls.Radio;
 import feathers.layout.HorizontalLayout;
@@ -89,6 +87,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var textViewName:TextInput;
     private var rbWebFormYes:Radio;
     private var rbWebFormNo:Radio;
+    private var sendEventAfterSave:String;
 
     public function new()
     {
@@ -219,13 +218,21 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
         
-        var btnSave = new Button("Save & Generate DXL");
+        var btnSave = new Button("Save");
         btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
         footerContainer.addChild(btnSave);
+
+        var btnSaveNSF = new Button("Save & Generate NSF");
+        btnSaveNSF.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
+        btnSaveNSF.addEventListener(TriggerEvent.TRIGGER, onGenerateNSF, false, 0, true);
+        footerContainer.addChild(btnSaveNSF);
 
         form.submitButton = btnSave;
 
         super.initialize();
+
+        if (this.filePath != null) 
+            this.retrieveFromFile();
     }
 
     override private function update():Void 
@@ -272,6 +279,12 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.onItemAddEdit();   
     }
 
+    private function onGenerateNSF(event:TriggerEvent):Void
+    {
+        this.sendEventAfterSave = VisualEditorEvent.SAVE_CODE_GENERATE_NSF;
+        this.initiateFormSave();
+    }
+
     private function onItemDeleteRequest(event:Event):Void
     {
         var formObject = cast(cast(event.currentTarget, DeleteGridItemRenderer).data, DominoFormFieldVO);
@@ -293,6 +306,12 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onFormSubmit(event:FormEvent):Void
     {
+        this.sendEventAfterSave = VisualEditorEvent.SAVE_CODE;
+        this.initiateFormSave();
+    }
+
+    private function initiateFormSave():Void
+    {
         if (this.validateForm())
         {
             if (!this.performPreSaveChecks()) 
@@ -300,7 +319,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
             this.dominoForm.formName = this.textFormName.text;
             this.dominoForm.viewName = this.textViewName.text;
-            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_CODE));
+            tabularTab.dispatchEvent(new VisualEditorEvent(this.sendEventAfterSave));
         }
     }
 
@@ -336,8 +355,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         if (authWindow.isNeedsFileNameSave) 
         {
-            this._filePath = "/opt/moonshineweb/users/"+ AppModelLocator.getInstance().currentUser +"/formbuilder/"+ authWindow.fileName;
-            trace(this.filePath);
             tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, authWindow.fileName));
         }
         

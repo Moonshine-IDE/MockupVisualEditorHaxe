@@ -104,13 +104,12 @@ class DominoTabularForm extends LayoutGroup
 		this.layout = thisLayout;
 
         formDescriptor = new FormDescriptor();
+        formDescriptor.filePath = this.filePath;
         formDescriptor.layoutData = new VerticalLayoutData(60, 100);
         formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);
 
         super.initialize();
-
-        formDescriptor.filePath = this.filePath;
     }
 
     public function release():Void
