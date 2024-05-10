@@ -133,7 +133,7 @@ class DominoFormVO extends EventDispatcher
     
     public function toViewColumnsCode():String
     {
-        var column:String = DominoTemplatesManager.getViewColumn();
+        var column:String = DominoTemplatesManager.getViewColumn().toLowerCase();
         
         // generate rows/columns
         var tmpColumns:String = "";
@@ -143,14 +143,10 @@ class DominoFormVO extends EventDispatcher
         {
             if (field.isIncludeInView)
             {
-                ereg = ~/%fieldname%/ig;
-                tmpColumn = ereg.replace(column, field.name);
-                ereg = ~/%sort%/ig;
-                tmpColumn = ereg.replace(column, field.sortOption.value);
-                ereg = ~/%categorized%/ig;
-                tmpColumn = ereg.replace(column, Std.string(field.sortOption.isCategorized));
-                ereg = ~/%label%/ig;
-                tmpColumn = ereg.replace(column, field.label);
+                tmpColumn = ~/%fieldname%/ig.replace(column, field.name);
+                tmpColumn = ~/%sort%/ig.replace(tmpColumn, field.sortOption.value);
+                tmpColumn = ~/%categorized%/ig.replace(tmpColumn, Std.string(field.sortOption.isCategorized));
+                tmpColumn = ~/%label%/ig.replace(tmpColumn, field.label);
                 
                 tmpColumns += tmpColumn;
             }
