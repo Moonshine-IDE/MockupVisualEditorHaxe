@@ -44,6 +44,7 @@ import feathers.controls.LayoutGroup;
 class DominoTabularForm extends LayoutGroup 
 {
     public var filePath:String;
+    public var isDefaultItem:Bool;
 
     public var moonshineBridge(get, set):IDominoFormBuilderLibraryBridge;
     private function set_moonshineBridge(value:IDominoFormBuilderLibraryBridge):IDominoFormBuilderLibraryBridge
@@ -105,6 +106,7 @@ class DominoTabularForm extends LayoutGroup
 
         formDescriptor = new FormDescriptor();
         formDescriptor.filePath = this.filePath;
+        formDescriptor.isDefaultItem = this.isDefaultItem;
         formDescriptor.layoutData = new VerticalLayoutData(60, 100);
         formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);

@@ -74,6 +74,8 @@ import views.renderers.GridViewColumnMultiline;
 
 class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
+    public var isDefaultItem:Bool;
+
     private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
     private var svViewName:StringValidator;
@@ -351,7 +353,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             authWindow.addEventListener(Event.CLOSE, onUserAuthenticated, false, 0, true);
             authWindow.fileName = this.textFormName.text + ".dfb";
             authWindow.isNeedsLogin = (this.appModelLocator.currentUser == null);
-            authWindow.isNeedsFileNameSave = (this.filePath == null);
+            authWindow.isNeedsFileNameSave = (this.filePath == null || this.isDefaultItem);
             authWindow.width = 400;
             authWindow.height = (authWindow.isNeedsFileNameSave && authWindow.isNeedsLogin) ? 186 : 136;
             PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
