@@ -60,7 +60,7 @@ class SortTypeVO
 	public var value:String;
 	public var isCategorized:Bool;
 	
-	public function new(label:String=null, value:String=null, ?categorized:Bool)
+	public function new(label:String=null, value:String=null, ?categorized:Bool=false)
 	{
 		this.label = label;
 		this.value = value;

@@ -104,6 +104,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         this.visibilityStateRecycler = DisplayObjectRecycler.withFunction(() -> {
             return (new FieldIncludeInGridItemRenderer());
+		}, (itemRenderer:FieldIncludeInGridItemRenderer, state:GridViewCellState) -> {
+            if (!state.data.hasEventListener(DominoFormFieldVO.EVENT_PROPERTY_CHANGED)) state.data.addEventListener(DominoFormFieldVO.EVENT_PROPERTY_CHANGED, this.onItemBeingUpdated, false, 0, true);
+		},
+		(itemRenderer:FieldIncludeInGridItemRenderer, state:GridViewCellState) -> {
+            state.data.removeEventListener(DominoFormFieldVO.EVENT_PROPERTY_CHANGED, this.onItemBeingUpdated);
 		});
 
         this.editRecycler = DisplayObjectRecycler.withFunction(() -> {
@@ -195,9 +200,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         this.dgFields.columns = new ArrayCollection([
             columnVisibility,
-            new GridViewColumn("Label", (data) -> data.label),
-            new GridViewColumn("Name", (data) -> data.name),
-            new GridViewColumn("Type", (data) -> data.type),
+            new GridViewColumn("Label", (data:DominoFormFieldVO) -> data.label),
+            new GridViewColumn("Name", (data:DominoFormFieldVO) -> data.name),
+            new GridViewColumn("Type", (data:DominoFormFieldVO) -> data.type),
             columnEdit,
             columnDelete
         ]);
@@ -223,7 +228,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         footerContainer.addChild(btnSave);
 
         var btnSaveNSF = new Button("Save & Generate NSF");
-        btnSaveNSF.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
+        btnSaveNSF.textFormat = new TextFormat("_sans", 13, null, true);
         btnSaveNSF.addEventListener(TriggerEvent.TRIGGER, onGenerateNSF, false, 0, true);
         footerContainer.addChild(btnSaveNSF);
 
@@ -266,6 +271,17 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         }
 
         return isAllRight;
+    }
+
+    private function onItemBeingUpdated(event:Event):Void 
+    {
+        var itemIndex = this.dominoForm.fields.indexOf(event.target);
+        if (itemIndex == -1)
+        {
+            return;	
+        }
+
+        this.dominoForm.fields.updateAt(itemIndex);
     }
 
     private function onItemEditRequest(event:Event):Void

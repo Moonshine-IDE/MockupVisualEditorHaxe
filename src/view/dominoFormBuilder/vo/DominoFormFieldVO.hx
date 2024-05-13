@@ -31,25 +31,90 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
 import view.dominoFormBuilder.vo.FormBuilderSortingType.SortTypeVO;
 import haxe.xml.Access;
 
-class DominoFormFieldVO 
+class DominoFormFieldVO extends EventDispatcher
 {
     public static final ELEMENT_NAME:String = "field";
+    public static final EVENT_PROPERTY_CHANGED = "event-property-changed";
 		
-    public var name:String;
-    public var label:String = "";
     public var description:String = "";
-    public var type:String = FormBuilderFieldType.fieldTypes.get(0);
     public var editable:String = FormBuilderEditableType.editableTypes.get(0);
     public var formula:String = "";
     public var sortOption:SortTypeVO = FormBuilderSortingType.sortTypes.get(0);
     public var isMultiValue:Bool;
-    public var isIncludeInView:Bool = true;
 
-    public function new() {}
+    private var _name:String;
+    public var name(get, set):String;
+    private function get_name():String
+    {
+        return _name;   
+    }
+    private function set_name(value:String):String
+    {
+        if (_name != value)
+        {
+            _name = value;
+            this.dispatchEvent(new Event(EVENT_PROPERTY_CHANGED));
+        }
+        return _name;
+    }
+
+    private var _label:String = "";
+    public var label(get, set):String;
+    private function get_label():String
+    {
+        return _label;   
+    }
+    private function set_label(value:String):String
+    {
+        if (_label != value)
+        {
+            _label = value;
+            this.dispatchEvent(new Event(EVENT_PROPERTY_CHANGED));
+        }
+        return _label;
+    }
+
+    private var _type:String = FormBuilderFieldType.fieldTypes.get(0);
+    public var type(get, set):String;
+    private function get_type():String
+    {
+        return _type;
+    }
+    private function set_type(value:String):String
+    {
+        if (_type != value)
+        {
+            _type = value;   
+            this.dispatchEvent(new Event(EVENT_PROPERTY_CHANGED));
+        }
+        return _type;
+    }
+
+    private var _isIncludeInView:Bool = true;
+    public var isIncludeInView(get, set):Bool;
+    private function get_isIncludeInView():Bool
+    {
+        return _isIncludeInView;   
+    }
+    private function set_isIncludeInView(value:Bool):Bool
+    {
+        if (_isIncludeInView != value)
+        {
+            _isIncludeInView = value;
+            this.dispatchEvent(new Event(EVENT_PROPERTY_CHANGED));
+        }   
+        return _isIncludeInView;
+    }
+
+    public function new() {
+        super();
+    }
 
     //--------------------------------------------------------------------------
     //
