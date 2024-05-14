@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
 import haxe.xml.Access;
 import feathers.data.ArrayCollection;
@@ -48,6 +49,7 @@ class DominoFormVO extends EventDispatcher
     public var pageContent:Xml;
     public var isSubForm:Bool;
     public var subFormsNames:Array<String>;
+    public var nsfPath:FileLocation;
 
     public function new()
     {
