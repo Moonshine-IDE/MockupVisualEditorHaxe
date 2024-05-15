@@ -85,8 +85,8 @@ class DominoTemplatesManager
         
         // since we have file-access problem within library project
         // we'll request the file available in main application sandbox
-        var templateFile:String = fileName +".dxl";
-        return readAndReturnAsString(templateFile);
+        //var templateFile:String = fileName +".dxl";
+        return readAndReturnAsString(fileName);
     }
     
     public static function getViewTemplate():String
