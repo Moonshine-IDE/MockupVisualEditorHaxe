@@ -37,6 +37,7 @@ class VisualEditorEvent extends Event
 {
     public static final SAVE_CODE:String = "saveCode";
     public static final SAVE_CODE_GENERATE_NSF:String = "saveCodeAndGenerateNSF";
+    public static final SAVE_CODE_GENERATE_JAVA:String = "saveCodeAndGenerateJava";
     public static final SAVE_NEW_FORM:String = "saveNewForm";
 
     public var data:Dynamic;

@@ -234,6 +234,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnSaveNSF.addEventListener(TriggerEvent.TRIGGER, onGenerateNSF, false, 0, true);
         footerContainer.addChild(btnSaveNSF);
 
+        var btnGenerateJava = new Button("Generate Java Agents");
+        btnGenerateJava.textFormat = new TextFormat("_sans", 13, null, true);
+        btnGenerateJava.addEventListener(TriggerEvent.TRIGGER, onGenerateJavaAgents, false, 0, true);
+        footerContainer.addChild(btnGenerateJava);
+
         form.submitButton = btnSave;
 
         super.initialize();
@@ -300,6 +305,12 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private function onGenerateNSF(event:TriggerEvent):Void
     {
         this.sendEventAfterSave = VisualEditorEvent.SAVE_CODE_GENERATE_NSF;
+        this.initiateFormSave();
+    }
+
+    private function onGenerateJavaAgents(event:TriggerEvent):Void
+    {
+        this.sendEventAfterSave = VisualEditorEvent.SAVE_CODE_GENERATE_JAVA;
         this.initiateFormSave();
     }
 

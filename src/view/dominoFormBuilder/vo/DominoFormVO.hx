@@ -50,6 +50,7 @@ class DominoFormVO extends EventDispatcher
     public var isSubForm:Bool;
     public var subFormsNames:Array<String>;
     public var nsfPath:FileLocation;
+    public var projectPath:FileLocation;
 
     public function new()
     {
