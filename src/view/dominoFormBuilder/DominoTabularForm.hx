@@ -43,8 +43,23 @@ import feathers.controls.LayoutGroup;
 
 class DominoTabularForm extends LayoutGroup 
 {
-    public var filePath:String;
     public var isDefaultItem:Bool;
+
+    private var _filePath:String;
+    public var filePath(get, set):String;
+    private function get_filePath():String
+    {
+        return _filePath;
+    }
+    private function set_filePath(value:String):String
+    {
+        _filePath = value;
+        if (this.formDescriptor != null) 
+        {
+            this.formDescriptor.filePath = value;
+        }
+        return _filePath;
+    }
 
     public var moonshineBridge(get, set):IDominoFormBuilderLibraryBridge;
     private function set_moonshineBridge(value:IDominoFormBuilderLibraryBridge):IDominoFormBuilderLibraryBridge
