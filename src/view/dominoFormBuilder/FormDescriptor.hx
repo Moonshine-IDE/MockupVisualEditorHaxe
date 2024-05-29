@@ -229,11 +229,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
         footerContainer.addChild(btnSave);
 
-        var btnSaveNSF = new Button("Save & Generate NSF");
-        btnSaveNSF.textFormat = new TextFormat("_sans", 13, null, true);
-        btnSaveNSF.addEventListener(TriggerEvent.TRIGGER, onGenerateNSF, false, 0, true);
-        footerContainer.addChild(btnSaveNSF);
-
         form.submitButton = btnSave;
 
         super.initialize();
@@ -295,12 +290,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private function onItemAddRequest(event:TriggerEvent):Void
     {
         this.onItemAddEdit();   
-    }
-
-    private function onGenerateNSF(event:TriggerEvent):Void
-    {
-        this.sendEventAfterSave = VisualEditorEvent.SAVE_CODE_GENERATE_NSF;
-        this.initiateFormSave();
     }
 
     private function onItemDeleteRequest(event:Event):Void
