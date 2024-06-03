@@ -357,7 +357,7 @@ class FormFieldDescriptor extends Panel
         }
 
         var selectedItem = this.ddlType.selectedItem;
-        if (selectedItem.type == FormBuilderFieldType.RICH_TEXT)
+        if (selectedItem == FormBuilderFieldType.RICH_TEXT)
         {
             this.rbgMultivalue.selectedIndex = 1;
             this.rbMultiYes.enabled = false;
