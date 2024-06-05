@@ -90,6 +90,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormYes:Radio;
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
+    private var btnSave:Button;
 
     public function new()
     {
@@ -225,9 +226,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
         
-        var btnSave = new Button("Save");
-        btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
-        footerContainer.addChild(btnSave);
+        this.btnSave = new Button("Save");
+        this.btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
+        footerContainer.addChild(this.btnSave);
 
         form.submitButton = btnSave;
 
@@ -245,6 +246,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             this.textFormName.text = this.dominoForm.formName;
             this.textViewName.text = this.dominoForm.viewName;
             this.dgFields.dataProvider = this.dominoForm.fields;
+            this.btnSave.enabled = !this.isDefaultItem;
         }
 
         super.update();
