@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import views.popups.PopupSaveFile;
 import views.popups.PopupAuthentication;
 import haxeScripts.locator.AppModelLocator;
 import feathers.controls.Alert;
@@ -338,33 +339,44 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         // - user not authenticated
         // - user trying to save default form
         // - user trying to save new form
-        if (this.appModelLocator.currentUser == null || this.filePath == null)
+        // when we needs this 
+		// - user not authenticated
+		if (this.appModelLocator.currentUser == null)
         {
             var authWindow = new PopupAuthentication();
-            authWindow.addEventListener(Event.CLOSE, onUserAuthenticated, false, 0, true);
-            authWindow.fileName = this.textFormName.text + ".dfb";
             authWindow.isNeedsLogin = (this.appModelLocator.currentUser == null);
-            authWindow.isNeedsFileNameSave = (this.filePath == null || this.isDefaultItem);
             authWindow.width = 400;
-            authWindow.height = (authWindow.isNeedsFileNameSave && authWindow.isNeedsLogin) ? 186 : 136;
+            authWindow.height = 136;
             PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
+            return false;
+        }
+
+        if (this.filePath == null)
+        {
+            var saveWindow = new PopupSaveFile();
+            saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
+            saveWindow.fileName = this.textFormName.text + ".dfb";
+            saveWindow.isNeedsFileNameSave = (this.filePath == null || this.isDefaultItem);
+            saveWindow.width = 400;
+            saveWindow.height = 136;
+            PopUpManager.addPopUp(saveWindow, Application.topLevelApplication);
             return false;
         }
 
         return true;
     }
 
-    private function onUserAuthenticated(event:Event):Void
+    private function onSavePopupClosed(event:Event):Void
     {
-        var authWindow = cast(event.currentTarget, PopupAuthentication);
-		authWindow.removeEventListener(Event.CLOSE, onUserAuthenticated);
+        var saveWindow = cast(event.currentTarget, PopupSaveFile);
+		saveWindow.removeEventListener(Event.CLOSE, onSavePopupClosed);
 
-        if (authWindow.isCancelled) 
+        if (saveWindow.isCancelled) 
 			return;
 
-        if (authWindow.isNeedsFileNameSave) 
+        if (saveWindow.isNeedsFileNameSave) 
         {
-            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, authWindow.fileName));
+            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
         }
         
 		// re-run the process
