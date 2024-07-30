@@ -357,7 +357,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             var saveWindow = new PopupSaveFile();
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
             saveWindow.fileName = this.textFormName.text + ".dfb";
-            saveWindow.isNeedsFileNameSave = (this.filePath == null || this.isDefaultItem);
             saveWindow.width = 400;
             saveWindow.height = 136;
             PopUpManager.addPopUp(saveWindow, Application.topLevelApplication);
@@ -375,10 +374,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         if (saveWindow.isCancelled) 
 			return;
 
-        if (saveWindow.isNeedsFileNameSave) 
-        {
-            tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
-        }
+        tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
         
 		// re-run the process
 		this.onFormSubmit(null);

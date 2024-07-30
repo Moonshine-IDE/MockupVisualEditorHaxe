@@ -9,5 +9,4 @@ extern class PopupAuthentication extends TitleWindow
     public var isNeedsLogin:Bool;
 
     public var isCancelled(default, never):Bool;
-    public var fileName(default, default):String;
 }

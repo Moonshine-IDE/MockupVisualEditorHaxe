@@ -6,8 +6,6 @@ extern class PopupSaveFile extends TitleWindow
 {
 	public function new();
 	
-    public var isNeedsFileNameSave = false;
-
     public var isCancelled(default, never):Bool;
     public var fileName(default, default):String;
 }
