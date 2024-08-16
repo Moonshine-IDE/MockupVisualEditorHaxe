@@ -345,7 +345,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 		if (this.appModelLocator.currentUser == null)
         {
             var authWindow = new PopupAuthentication();
-            authWindow.isNeedsLogin = (this.appModelLocator.currentUser == null);
             authWindow.width = 400;
             authWindow.height = 136;
             PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
