@@ -353,9 +353,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         if (this.filePath == null)
         {
-            var saveWindow = new PopupSaveFile();
+            var saveWindow = new PopupSaveFile(SaveType.FormBuilder);
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
-            saveWindow.fileName = this.textFormName.text + ".dfb";
+            saveWindow.fileName = this.textFormName.text;
             saveWindow.width = 400;
             saveWindow.height = 136;
             PopUpManager.addPopUp(saveWindow, Application.topLevelApplication);
