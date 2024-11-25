@@ -5,7 +5,7 @@ import feathers.controls.TitleWindow;
 extern enum abstract SaveType(String)
 {
     var MXHX;
-    var FormBuilderProject;
+    var Abstract;
     var FormBuilder;
 }
 extern class PopupSaveFile extends TitleWindow 
