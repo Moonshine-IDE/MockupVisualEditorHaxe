@@ -31,6 +31,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import feathers.events.ValidationResultEvent;
+import feathers.controls.AssetLoader;
+import theme.AppTheme;
+import feathers.layout.HorizontalLayoutData;
+import haxeScripts.ui.Spacer;
+import haxeScripts.valueObjects.ProjectVO;
 import views.popups.PopupSaveFile;
 import views.popups.PopupAuthentication;
 import views.popups.PopupSaveFile;
@@ -77,6 +83,7 @@ import views.renderers.GridViewColumnMultiline;
 class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
     public var isDefaultItem:Bool;
+    public var selectedProject:ProjectVO;
 
     private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
@@ -181,8 +188,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         webFormItem.content = radioContainer;
         form.addChild(webFormItem);
 
+        var borderHodlerBackgroundSkin = new RectangleSkin(SolidColor(0xCCCCCC), SolidColor(1, 0x999999));
+        borderHodlerBackgroundSkin.cornerRadius = 6;
+
         var borderedHolder = new LayoutGroup();
-		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0xCCCCCC), SolidColor(1, 0x999999));
+		borderedHolder.backgroundSkin = borderHodlerBackgroundSkin;
 		borderedHolder.layout = new AnchorLayout();
 		borderedHolder.layoutData = new VerticalLayoutData(100, 100);
 		this.addChild(borderedHolder);
@@ -217,19 +227,26 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         var footerContainerLayout = new HorizontalLayout();
         footerContainerLayout.horizontalAlign = RIGHT;
         footerContainerLayout.gap = 10;
+        footerContainerLayout.paddingTop = 6;
 
         var footerContainer = new LayoutGroup();
         footerContainer.layout = footerContainerLayout;
         footerContainer.layoutData = new VerticalLayoutData(100);
         this.addChild(footerContainer);
 
-        var btnAdd = new Button("Add");
-        btnAdd.textFormat = new TextFormat("_sans", 13, null, true);
+        var btnAdd = new Button("Add New Field");
+        btnAdd.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
+        btnAdd.icon = new AssetLoader("images/icoBtnPlus.png");
         btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
+
+        var spacer = new Spacer();
+        spacer.layoutData = new HorizontalLayoutData(100);
+        footerContainer.addChild(spacer);
         
         this.btnSave = new Button("Save");
-        this.btnSave.textFormat = new TextFormat("_sans", 13, 0x3b8132, true);
+        this.btnSave.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
+        this.btnSave.icon = new AssetLoader("images/icoSave.png");
         footerContainer.addChild(this.btnSave);
 
         form.submitButton = btnSave;
@@ -256,6 +273,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     public function validateForm():Bool
     {
+        this.setupValidators();
+
         // validation test
         var isAllRight = true;
         var events = Validator.validateAll([this.svFormName, this.svViewName]);
@@ -267,11 +286,90 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
                 {
                     isAllRight = false;
                     break;
-                }   
+                }
             }
         }
 
         return isAllRight;
+    }
+
+    private function setupValidators():Void
+    {
+        this.releaseValidatorEvents();
+
+        this.svFormName = new StringValidator();
+        this.svFormName.source = null;
+        this.svFormName.valueFunction = () -> this.textFormName.text;
+        this.svFormName.triggerEvent = null;
+        this.svFormName.addEventListener(ValidationResultEvent.VALID, onFormNameValidated, false, 0, true);
+        this.svFormName.addEventListener(ValidationResultEvent.INVALID, onFormNameValidationFailed, false, 0, true);
+
+        this.svViewName = new StringValidator();
+        this.svViewName.source = null;
+        this.svViewName.valueFunction = () -> this.textViewName.text;
+        this.svViewName.triggerEvent = null;
+        this.svViewName.addEventListener(ValidationResultEvent.VALID, onViewNameValidated, false, 0, true);
+        this.svViewName.addEventListener(ValidationResultEvent.INVALID, onViewNameValidationFailed, false, 0, true);
+    }
+
+    private function releaseValidatorEvents():Void
+    {
+        if (this.svFormName != null)
+        {
+            this.svFormName.removeEventListener(ValidationResultEvent.VALID, this.onFormNameValidated);
+            this.svFormName.removeEventListener(ValidationResultEvent.INVALID, this.onFormNameValidationFailed);
+            this.svFormName = null;
+
+            this.svViewName.removeEventListener(ValidationResultEvent.VALID, this.onViewNameValidated);
+            this.svViewName.removeEventListener(ValidationResultEvent.INVALID, this.onViewNameValidationFailed);
+            this.svViewName = null;
+        }
+    }
+
+    private function onFormNameValidated(event:ValidationResultEvent):Void
+    {
+        this.textFormName.errorString = null;
+    }
+
+    private function onFormNameValidationFailed(event:ValidationResultEvent):Void
+    {
+        var errorString = "";
+        for (validationResult in event.results)
+        {
+            if (!validationResult.isError)
+            {
+                continue;   
+            }
+            if (errorString.length > 0)
+            {
+                errorString += "\n";
+            }
+            errorString += validationResult.errorMessage;
+        }
+        this.textFormName.errorString = errorString;
+    }
+
+    private function onViewNameValidated(event:ValidationResultEvent):Void
+    {
+        this.textViewName.errorString = null;
+    }
+
+    private function onViewNameValidationFailed(event:ValidationResultEvent):Void
+    {
+        var errorString = "";
+        for (validationResult in event.results)
+        {
+            if (!validationResult.isError)
+            {
+                continue;   
+            }
+            if (errorString.length > 0)
+            {
+                errorString += "\n";
+            }
+            errorString += validationResult.errorMessage;
+        }
+        this.textViewName.errorString = errorString;
     }
 
     private function onItemBeingUpdated(event:Event):Void 
@@ -356,6 +454,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             var saveWindow = new PopupSaveFile(SaveType.FormBuilder);
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
             saveWindow.fileName = this.textFormName.text;
+            saveWindow.project = this.selectedProject;
             saveWindow.width = 400;
             PopUpManager.addPopUp(saveWindow, Application.topLevelApplication);
             return false;
@@ -372,6 +471,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         if (saveWindow.isCancelled) 
 			return;
 
+		this.selectedProject = cast saveWindow.project;
+        tabularTab.selectedProject = this.selectedProject;
         tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
         
 		// re-run the process

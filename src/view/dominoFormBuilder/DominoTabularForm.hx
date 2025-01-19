@@ -31,19 +31,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import haxeScripts.valueObjects.ProjectVO;
 import view.dominoFormBuilder.vo.DominoFormVO;
 import feathers.layout.VerticalLayoutData;
 import feathers.layout.VerticalLayout;
-import feathers.layout.AnchorLayoutData;
 import utils.MoonshineBridgeUtils;
 import view.interfaces.IDominoFormBuilderLibraryBridge;
-import feathers.skins.RectangleSkin;
-import feathers.layout.AnchorLayout;
 import feathers.controls.LayoutGroup;
 
 class DominoTabularForm extends LayoutGroup 
 {
     public var isDefaultItem:Bool;
+    public var selectedProject:ProjectVO;
 
     private var _filePath:String;
     public var filePath(get, set):String;
@@ -122,6 +121,7 @@ class DominoTabularForm extends LayoutGroup
         formDescriptor = new FormDescriptor();
         formDescriptor.filePath = this.filePath;
         formDescriptor.isDefaultItem = this.isDefaultItem;
+        formDescriptor.selectedProject = this.selectedProject;
         formDescriptor.layoutData = new VerticalLayoutData(60, 100);
         formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);
