@@ -31,6 +31,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import theme.AppTheme;
+import openfl.events.KeyboardEvent;
+import feathers.controls.TitleWindow;
+import openfl.ui.Keyboard;
 import feathers.data.ArrayCollection;
 import openfl.events.Event;
 import feathers.validators.Validator;
@@ -62,11 +66,18 @@ import feathers.controls.Form;
 import feathers.layout.VerticalLayout;
 import feathers.controls.LayoutGroup;
 
-class FormFieldDescriptor extends Panel 
+class FormFieldDescriptor extends TitleWindow 
 {
     public static final EVENT_FORM_SUBMITS = "event-form-submits";
 
     public var editItem:DominoFormFieldVO;
+    
+    private var _isCancelled:Bool;
+    public var isCancelled(get, never):Bool;
+    private function get_isCancelled():Bool
+    {
+        return _isCancelled;
+    }
     
     private var isItemEdit:Bool;
     private var txtName:TextInput;
@@ -86,13 +97,13 @@ class FormFieldDescriptor extends Panel
 
     public function new()
     {
-        super();   
+        super();
+        this.closeEnabled = true;
+        this.title = "Add/Edit Field";
     } 
 
     override private function initialize():Void 
     {
-        this.createHeader();
-
         var rootLayout = new VerticalLayout();
         rootLayout.paddingBottom = 10;
         rootLayout.paddingLeft = 40;
@@ -186,6 +197,7 @@ class FormFieldDescriptor extends Panel
         cast(footer.layout, VerticalLayout).gap = 4;
 
         var line = new Line();
+        line.customVariant = AppTheme.THEME_VARIANT_LINE;
         line.layoutData = new VerticalLayoutData(100);
         footer.addChild(line);
 
@@ -200,13 +212,7 @@ class FormFieldDescriptor extends Panel
         footer.addChild(buttonsContainer);
 
         var btnSubmit = new Button("SUBMIT");
-        btnSubmit.textFormat = new TextFormat("_sans", 11, 0x3b8132, true);
         buttonsContainer.addChild(btnSubmit);
-
-        var btnClose = new Button("CANCEL");
-        btnClose.textFormat = new TextFormat("_sans", 11, null, true);
-        btnClose.addEventListener(TriggerEvent.TRIGGER, onCloseWindowRequest, false, 0, true);
-        buttonsContainer.addChild(btnClose);
 
         this.footer = footer;
         form.submitButton = btnSubmit;
@@ -214,6 +220,22 @@ class FormFieldDescriptor extends Panel
         this.setupValidators();
         this.onCreationCompletes();
         super.initialize();
+    }
+
+    override private function closeButton_triggerHandler(event:TriggerEvent):Void 
+    {
+        this._isCancelled = true;
+        this.closePopup();
+    }
+
+    override private function titleWindow_keyDownHandler(event:KeyboardEvent):Void 
+    {
+        switch (event.keyCode) {
+            case Keyboard.ESCAPE:
+            {
+                this.closeButton_triggerHandler(null);
+            }
+        }
     }
 
     private function setupValidators():Void
@@ -241,14 +263,6 @@ class FormFieldDescriptor extends Panel
             }
             this.txtName.errorString = errorString;
         }, false, 0, true);
-    }
-
-    private function createHeader():Void 
-    {
-        var header = new Header();
-        header.text = "Add/Edit Field";
-
-        this.header = header;
     }
 
     private function onCreationCompletes():Void
@@ -317,12 +331,12 @@ class FormFieldDescriptor extends Panel
         this.editItem.sortOption = this.ddlSort.selectedItem;
 
         this.dispatchEvent(new Event(EVENT_FORM_SUBMITS));
-        this.onCloseWindowRequest(null);
+        this.closePopup();
     }
 
-    private function onCloseWindowRequest(event:TriggerEvent):Void
+    private function closePopup():Void
     {
-        PopUpManager.removePopUp(this);   
+        PopUpManager.removePopUp(this);
     }
 
     private function updateSortingSelection():Void

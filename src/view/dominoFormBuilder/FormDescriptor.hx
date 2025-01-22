@@ -100,6 +100,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
+    private var lblTitle:Label;
 
     public function new()
     {
@@ -147,12 +148,13 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 		thisLayout.gap = 10;
 		this.layout = thisLayout;
 
-        var lblTitle = new Label("New Domino Form");
-        lblTitle.textFormat = new TextFormat("_sans", 24, 0xe252d3);
-        lblTitle.layoutData = new VerticalLayoutData(100);
-        this.addChild(lblTitle);
+        this.lblTitle = new Label("New Domino Form");
+        this.lblTitle.variant = AppTheme.THEME_VARIANT_SECTION_TITLE;
+        this.lblTitle.layoutData = new VerticalLayoutData(100);
+        this.addChild(this.lblTitle);
 
         var line = new Line();
+        line.customVariant = AppTheme.THEME_VARIANT_LINE;
         line.layoutData = new VerticalLayoutData(100);
         this.addChild(line);
 
@@ -188,17 +190,14 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         webFormItem.content = radioContainer;
         form.addChild(webFormItem);
 
-        var borderHodlerBackgroundSkin = new RectangleSkin(SolidColor(0xCCCCCC), SolidColor(1, 0x999999));
-        borderHodlerBackgroundSkin.cornerRadius = 6;
-
         var borderedHolder = new LayoutGroup();
-		borderedHolder.backgroundSkin = borderHodlerBackgroundSkin;
+		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0x666666));
 		borderedHolder.layout = new AnchorLayout();
 		borderedHolder.layoutData = new VerticalLayoutData(100, 100);
 		this.addChild(borderedHolder);
 
         this.dgFields = new GridView();
-        this.dgFields.layoutData = new AnchorLayoutData(30, 30, 30, 30);
+        this.dgFields.layoutData = new AnchorLayoutData(22, 22, 22, 22);
         this.dgFields.variant = GridView.VARIANT_BORDERLESS;
         this.dgFields.resizableColumns = true;
         this.dgFields.dragEnabled = true;
@@ -239,10 +238,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnAdd.icon = new AssetLoader("images/icoBtnPlus.png");
         btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
-
-        var spacer = new Spacer();
-        spacer.layoutData = new HorizontalLayoutData(100);
-        footerContainer.addChild(spacer);
         
         this.btnSave = new Button("Save");
         this.btnSave.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
@@ -265,7 +260,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             this.textFormName.text = this.dominoForm.formName;
             this.textViewName.text = this.dominoForm.viewName;
             this.dgFields.dataProvider = this.dominoForm.fields;
+            if (this.dominoForm.fields.length > 0) 
+                this.dgFields.selectedIndex = 0;
             this.btnSave.enabled = !this.isDefaultItem;
+            if (this.filePath != null) 
+                this.lblTitle.text = this.dominoForm.viewName;
         }
 
         super.update();

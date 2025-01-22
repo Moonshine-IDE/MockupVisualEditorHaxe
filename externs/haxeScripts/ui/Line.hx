@@ -36,4 +36,8 @@ import feathers.controls.LayoutGroup;
 extern class Line extends LayoutGroup
 {
     public function new(strokeColor:Int=0xCCCCCC, strokeHeight:Int=1);
+
+    public var customVariant(get, set):String;
+    private function get_customVariant():String;
+    private function set_customVariant(value:String):String;
 }

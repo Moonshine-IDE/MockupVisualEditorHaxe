@@ -1,5 +1,6 @@
 package view.renderers;
 
+import feathers.skins.RectangleSkin;
 import view.dominoFormBuilder.vo.DominoFormFieldVO;
 import feathers.core.InvalidationFlag;
 import feathers.layout.AnchorLayoutData;
@@ -10,6 +11,12 @@ import feathers.controls.dataRenderers.LayoutGroupItemRenderer;
 class FieldIncludeInGridItemRenderer extends LayoutGroupItemRenderer 
 {
     private var alEye:AssetLoader;
+
+    public function new()
+    {
+        super();
+        this.minHeight = 55;
+    }
 
 	override private function initialize():Void 
 	{
