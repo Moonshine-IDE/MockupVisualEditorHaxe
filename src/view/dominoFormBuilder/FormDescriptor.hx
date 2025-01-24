@@ -227,6 +227,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         footerContainerLayout.horizontalAlign = RIGHT;
         footerContainerLayout.gap = 10;
         footerContainerLayout.paddingTop = 6;
+        footerContainerLayout.paddingLeft = footerContainerLayout.paddingRight = 22;
 
         var footerContainer = new LayoutGroup();
         footerContainer.layout = footerContainerLayout;
@@ -238,6 +239,10 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         btnAdd.icon = new AssetLoader("images/icoBtnPlus.png");
         btnAdd.addEventListener(TriggerEvent.TRIGGER, onItemAddRequest, false, 0, true);
         footerContainer.addChild(btnAdd);
+
+        var spacer = new Spacer();
+        spacer.layoutData = new HorizontalLayoutData(100);
+        footerContainer.addChild(spacer);
         
         this.btnSave = new Button("Save");
         this.btnSave.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
