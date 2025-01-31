@@ -31,15 +31,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import views.popups.PopupSaveFile.SaveType;
+import views.popups.PopupFBSaveFile;
 import feathers.events.ValidationResultEvent;
 import feathers.controls.AssetLoader;
 import theme.AppTheme;
 import feathers.layout.HorizontalLayoutData;
 import haxeScripts.ui.Spacer;
 import haxeScripts.valueObjects.ProjectVO;
-import views.popups.PopupSaveFile;
 import views.popups.PopupAuthentication;
-import views.popups.PopupSaveFile;
 import haxeScripts.locator.AppModelLocator;
 import feathers.controls.Alert;
 import feathers.events.TriggerEvent;
@@ -455,7 +455,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         if (this.filePath == null)
         {
-            var saveWindow = new PopupSaveFile(SaveType.FormBuilder);
+            var saveWindow = new PopupFBSaveFile(SaveType.FormBuilder);
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
             saveWindow.fileName = this.textFormName.text;
             saveWindow.project = this.selectedProject;
@@ -469,7 +469,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onSavePopupClosed(event:Event):Void
     {
-        var saveWindow = cast(event.currentTarget, PopupSaveFile);
+        var saveWindow = cast(event.currentTarget, PopupFBSaveFile);
 		saveWindow.removeEventListener(Event.CLOSE, onSavePopupClosed);
 
         if (saveWindow.isCancelled) 
