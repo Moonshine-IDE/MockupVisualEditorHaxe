@@ -148,7 +148,7 @@ class FormFieldDescriptor extends TitleWindow
         cast(multiValueContainer.layout, HorizontalLayout).gap = 10;
         this.rbMultiYes = new Radio("Yes");
         this.rbMultiYes.toggleGroup = this.rbgMultivalue;
-        this.rbMultiNo = new Radio("No");
+        this.rbMultiNo = new Radio("No", true);
         this.rbMultiNo.toggleGroup = this.rbgMultivalue;
         multiValueContainer.addChild(this.rbMultiYes);
         multiValueContainer.addChild(this.rbMultiNo);
