@@ -133,4 +133,14 @@ class DominoTabularForm extends LayoutGroup
     {
         formDescriptor.release();
     }
+
+    public function requestSaveByOwner():Void
+    {
+        formDescriptor.requestSaveByOwner();
+    }
+
+    public function onFormSaved():Void
+    {
+        formDescriptor.onFormSaved();
+    }
 }

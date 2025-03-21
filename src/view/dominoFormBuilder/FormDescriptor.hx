@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import haxeScripts.utils.AppUtils;
 import views.popups.PopupSaveFile.SaveType;
 import views.popups.PopupFBSaveFile;
 import feathers.events.ValidationResultEvent;
@@ -267,7 +268,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             this.dgFields.dataProvider = this.dominoForm.fields;
             if (this.dominoForm.fields.length > 0) 
                 this.dgFields.selectedIndex = 0;
-            this.btnSave.enabled = !this.isDefaultItem;
             if (this.filePath != null) 
                 this.lblTitle.text = this.dominoForm.viewName;
         }
@@ -295,6 +295,16 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         }
 
         return isAllRight;
+    }
+
+    public function requestSaveByOwner():Void
+    {
+        this.onFormSubmit(null);
+    }
+
+    public function onFormSaved():Void
+    {
+        this.isDefaultItem = false;
     }
 
     private function setupValidators():Void
@@ -430,10 +440,15 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             if (!this.performPreSaveChecks()) 
                 return;
 
-            this.dominoForm.formName = this.textFormName.text;
-            this.dominoForm.viewName = this.textViewName.text;
-            tabularTab.dispatchEvent(new VisualEditorEvent(this.sendEventAfterSave));
+            this.proceedToSave();
         }
+    }
+
+    private function proceedToSave():Void
+    {
+        this.dominoForm.formName = this.textFormName.text;
+        this.dominoForm.viewName = this.textViewName.text;
+        tabularTab.dispatchEvent(new VisualEditorEvent(this.sendEventAfterSave));
     }
 
     private function performPreSaveChecks():Bool
@@ -446,16 +461,14 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 		// - user not authenticated
 		if (this.appModelLocator.currentUser == null)
         {
-            var authWindow = new PopupAuthentication();
-            authWindow.width = 400;
-            authWindow.height = 136;
-            PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
+            AppUtils.openAuthenticationPrompt();
             return false;
         }
 
-        if (this.filePath == null)
+        if (this.filePath == null || this.isDefaultItem)
         {
             var saveWindow = new PopupFBSaveFile(SaveType.FormBuilder);
+            saveWindow.title = (this.isDefaultItem) ? "Save as" : "Save file";
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
             saveWindow.fileName = this.textFormName.text;
             saveWindow.project = this.selectedProject;
@@ -480,7 +493,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
         
 		// re-run the process
-		this.onFormSubmit(null);
+		this.proceedToSave();
     }
 
     private function onFormSubmits(event:Event):Void
