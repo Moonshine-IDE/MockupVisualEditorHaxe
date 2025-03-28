@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import feathers.layout.AnchorLayoutData;
+import feathers.layout.AnchorLayout;
 import haxeScripts.valueObjects.ProjectVO;
 import view.dominoFormBuilder.vo.DominoFormVO;
 import feathers.layout.VerticalLayoutData;
@@ -110,19 +112,13 @@ class DominoTabularForm extends LayoutGroup
 
     override private function initialize():Void 
     {
-        var thisLayout = new VerticalLayout();
-		thisLayout.horizontalAlign = CENTER;
-		thisLayout.paddingTop = 30;
-		thisLayout.paddingBottom = 30;
-		thisLayout.gap = 30;
-
-		this.layout = thisLayout;
+		this.layout = new AnchorLayout();
 
         formDescriptor = new FormDescriptor();
         formDescriptor.filePath = this.filePath;
         formDescriptor.isDefaultItem = this.isDefaultItem;
         formDescriptor.selectedProject = this.selectedProject;
-        formDescriptor.layoutData = new VerticalLayoutData(60, 100);
+        formDescriptor.layoutData = AnchorLayoutData.fill();
         formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);
 

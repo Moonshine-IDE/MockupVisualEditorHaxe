@@ -101,7 +101,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
-    private var lblTitle:Label;
 
     public function new()
     {
@@ -144,28 +143,32 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     override private function initialize():Void 
     {
-        var thisLayout = new VerticalLayout();
-		thisLayout.horizontalAlign = CENTER;
-		thisLayout.gap = 10;
-		this.layout = thisLayout;
+        this.layout = new AnchorLayout();
 
-        this.lblTitle = new Label("New Domino Form");
-        this.lblTitle.variant = AppTheme.THEME_VARIANT_SECTION_TITLE;
-        this.lblTitle.layoutData = new VerticalLayoutData(100);
-        this.addChild(this.lblTitle);
+        var borderedHolder = new LayoutGroup();
+		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0x666666));
+		borderedHolder.layout = new AnchorLayout();
+		borderedHolder.layoutData = AnchorLayoutData.fill();
+		this.addChild(borderedHolder);
 
-        var line = new Line();
-        line.customVariant = AppTheme.THEME_VARIANT_LINE;
-        line.layoutData = new VerticalLayoutData(100);
-        this.addChild(line);
+        var rootContainerLayout = new VerticalLayout();
+        rootContainerLayout.setPadding(10);
+		rootContainerLayout.gap = 20;
+
+        var rootContainer = new LayoutGroup();
+        rootContainer.backgroundSkin = new RectangleSkin(SolidColor(0xf8f8f8)); // needs to be altered upon mode change
+        rootContainer.layoutData = new AnchorLayoutData(22, 22, 22, 22);
+        rootContainer.layout = rootContainerLayout;
+        borderedHolder.addChild(rootContainer);        
 
         var form = new Form();
         form.layoutData = new VerticalLayoutData(100);
         form.addEventListener(FormEvent.SUBMIT, this.onFormSubmit, false, 0, true);
-        this.addChild(form);
+        rootContainer.addChild(form);
 
         var formNameItem = new FormItem("Form Name", null, true);
         formNameItem.horizontalAlign = JUSTIFY;
+        formNameItem.paddingLeft = formNameItem.paddingRight = 10;
         this.textFormName = new TextInput();
         this.textFormName.restrict = "0-9A-Za-z_";
         formNameItem.content = this.textFormName;
@@ -173,12 +176,14 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         var viewNameItem = new FormItem("View Name", null, true);
         viewNameItem.horizontalAlign = JUSTIFY;
+        viewNameItem.paddingLeft = viewNameItem.paddingRight = 10;
         this.textViewName = new TextInput();
         viewNameItem.content = this.textViewName;
         form.addChild(viewNameItem);
 
         var webFormItem = new FormItem("Is this a web form?");
         webFormItem.horizontalAlign = JUSTIFY;
+        webFormItem.paddingLeft = webFormItem.paddingRight = 10;
         var radioContainer = new LayoutGroup();
         radioContainer.layout = new HorizontalLayout();
         cast(radioContainer.layout, HorizontalLayout).gap = 10;
@@ -191,14 +196,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         webFormItem.content = radioContainer;
         form.addChild(webFormItem);
 
-        var borderedHolder = new LayoutGroup();
-		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0x666666));
-		borderedHolder.layout = new AnchorLayout();
-		borderedHolder.layoutData = new VerticalLayoutData(100, 100);
-		this.addChild(borderedHolder);
-
         this.dgFields = new GridView();
-        this.dgFields.layoutData = new AnchorLayoutData(22, 22, 22, 22);
+        this.dgFields.layoutData = new VerticalLayoutData(100, 100);
         this.dgFields.variant = GridView.VARIANT_BORDERLESS;
         this.dgFields.resizableColumns = true;
         this.dgFields.dragEnabled = true;
@@ -222,7 +221,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             columnDelete
         ]);
 
-        borderedHolder.addChild(this.dgFields);
+        rootContainer.addChild(this.dgFields);
 
         var footerContainerLayout = new HorizontalLayout();
         footerContainerLayout.horizontalAlign = RIGHT;
@@ -268,8 +267,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             this.dgFields.dataProvider = this.dominoForm.fields;
             if (this.dominoForm.fields.length > 0) 
                 this.dgFields.selectedIndex = 0;
-            if (this.filePath != null) 
-                this.lblTitle.text = this.dominoForm.viewName;
         }
 
         super.update();
