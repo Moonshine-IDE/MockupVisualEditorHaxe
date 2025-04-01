@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.supportClasses;
 
+import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
+import haxeScripts.events.GlobalEventDispatcher;
 import feathers.core.InvalidationFlag;
 import openfl.events.Event;
 import view.supportClasses.events.PropertyEditorChangeEvent;
@@ -116,6 +118,7 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
         this.dominoForm.fields.addEventListener(Event.CHANGE, onFormFieldsCollectionChanged);
 
         this.setInvalid(InvalidationFlag.DATA);
+        GlobalEventDispatcher.getInstance().dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
     }
     
     private function removeChangeListeners():Void

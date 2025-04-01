@@ -146,17 +146,18 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.layout = new AnchorLayout();
 
         var borderedHolder = new LayoutGroup();
-		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0x666666));
+		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(AppTheme.isDarkMode()?0x222222:0x666666));
 		borderedHolder.layout = new AnchorLayout();
 		borderedHolder.layoutData = AnchorLayoutData.fill();
 		this.addChild(borderedHolder);
 
         var rootContainerLayout = new VerticalLayout();
-        rootContainerLayout.setPadding(10);
+        rootContainerLayout.paddingLeft = rootContainerLayout.paddingRight = rootContainerLayout.paddingBottom = 10;
+        rootContainerLayout.paddingTop = 20;
 		rootContainerLayout.gap = 20;
 
         var rootContainer = new LayoutGroup();
-        rootContainer.backgroundSkin = new RectangleSkin(SolidColor(0xf8f8f8)); // needs to be altered upon mode change
+        rootContainer.backgroundSkin = new RectangleSkin(SolidColor(AppTheme.isDarkMode()?AppTheme.THEME_BG_DARK:AppTheme.THEME_BG_NORMAL));
         rootContainer.layoutData = new AnchorLayoutData(22, 22, 22, 22);
         rootContainer.layout = rootContainerLayout;
         borderedHolder.addChild(rootContainer);        
@@ -223,7 +224,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         rootContainer.addChild(this.dgFields);
 
-        var footerContainerLayout = new HorizontalLayout();
+        /*var footerContainerLayout = new HorizontalLayout();
         footerContainerLayout.horizontalAlign = RIGHT;
         footerContainerLayout.gap = 10;
         footerContainerLayout.paddingTop = 6;
@@ -247,9 +248,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.btnSave = new Button("Save");
         this.btnSave.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
         this.btnSave.icon = new AssetLoader("images/icoSave.png");
-        footerContainer.addChild(this.btnSave);
+        footerContainer.addChild(this.btnSave);*/
 
-        form.submitButton = btnSave;
+        //form.submitButton = btnSave;
 
         super.initialize();
 

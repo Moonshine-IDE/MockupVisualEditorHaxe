@@ -15,7 +15,6 @@ class FieldIncludeInGridItemRenderer extends LayoutGroupItemRenderer
     public function new()
     {
         super();
-        this.minHeight = 55;
     }
 
 	override private function initialize():Void 
