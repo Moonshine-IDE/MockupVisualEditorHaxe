@@ -35,7 +35,8 @@ import openfl.events.Event;
 
 class FormBuilderEvent extends Event 
 {
-    public static final FORM_POPULATED:String = "formPopulated";
+    public static final FORM_POPULATED:String = "event-fb-form-populated";
+    public static final FORM_UPDATED = "event-fb-form-updated";
 
     public var data:Dynamic;
     public function new(type:String, ?data:Dynamic)

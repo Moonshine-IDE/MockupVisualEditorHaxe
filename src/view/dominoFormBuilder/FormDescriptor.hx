@@ -305,6 +305,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.isDefaultItem = false;
     }
 
+    public function addNewFieldRequest():Void
+    {
+        this.onItemAddEdit();
+    }
+
     private function setupValidators():Void
     {
         this.releaseValidatorEvents();
@@ -403,7 +408,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onItemAddRequest(event:TriggerEvent):Void
     {
-        this.onItemAddEdit();   
+        
     }
 
     private function onItemDeleteRequest(event:Event):Void

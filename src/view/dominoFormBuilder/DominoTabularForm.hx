@@ -108,6 +108,8 @@ class DominoTabularForm extends LayoutGroup
     public function new()
     {
         super();
+        this.minWidth = 300;
+		this.minHeight = 300;
     }
 
     override private function initialize():Void 
@@ -138,5 +140,10 @@ class DominoTabularForm extends LayoutGroup
     public function onFormSaved():Void
     {
         formDescriptor.onFormSaved();
+    }
+
+    public function addNewFieldRequest():Void
+    {
+        formDescriptor.addNewFieldRequest();
     }
 }
