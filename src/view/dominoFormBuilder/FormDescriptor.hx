@@ -31,6 +31,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import haxe.Timer;
+import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
+import haxeScripts.events.GlobalEventDispatcher;
 import haxeScripts.utils.AppUtils;
 import views.popups.PopupSaveFile.SaveType;
 import views.popups.PopupFBSaveFile;
@@ -256,6 +259,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
         if (this.filePath != null) 
             this.retrieveFromFile();
+        else 
+            GlobalEventDispatcher.getInstance().dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
     }
 
     override private function update():Void 

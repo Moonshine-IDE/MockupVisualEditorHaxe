@@ -43,7 +43,7 @@ class DominoFormVO extends EventDispatcher
 		
     public var formName:String;
     public var viewName:String;
-    public var hasWebAccess:Bool;
+    public var hasWebAccess:Bool = false;
     public var fields:ArrayCollection<DominoFormFieldVO> = new ArrayCollection();
     public var dxlGeneratedOn:Date;
     public var pageContent:Xml;
@@ -93,10 +93,10 @@ class DominoFormVO extends EventDispatcher
     {
         var xml:Xml = Xml.createElement(ELEMENT_NAME);
         xml.set("hasWebAccess", Std.string(hasWebAccess));
-        xml.set("name", formName);
+        xml.set("name", (formName!=null)?formName:"");
         
         var tempXML:Xml = Xml.createElement("viewName");
-        tempXML.addChild(Xml.createCData(viewName));
+        tempXML.addChild(Xml.createCData((viewName!=null)?viewName:""));
         xml.addChild(tempXML);
         
         tempXML = Xml.createElement("fields");
