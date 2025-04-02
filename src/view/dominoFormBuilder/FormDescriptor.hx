@@ -425,7 +425,10 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         var formObject = cast(cast(event.currentTarget, DeleteGridItemRenderer).data, DominoFormFieldVO);
         Alert.show("Confirm delete field?", "Warning!", ["Yes", "No"], (state) -> {
             if (state.text == "Yes") 
+            {
                 dominoForm.fields.remove(formObject);
+                dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
+            }
         });
     }
 
