@@ -211,7 +211,7 @@ class FormFieldDescriptor extends TitleWindow
         buttonsContainer.layoutData = new VerticalLayoutData(100);
         footer.addChild(buttonsContainer);
 
-        var btnSubmit = new Button("SUBMIT");
+        var btnSubmit = new Button("Submit");
         buttonsContainer.addChild(btnSubmit);
 
         this.footer = footer;

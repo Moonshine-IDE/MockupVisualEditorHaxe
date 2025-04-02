@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import openfl.events.FocusEvent;
 import haxe.Timer;
 import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
 import haxeScripts.events.GlobalEventDispatcher;
@@ -104,6 +105,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
+    private var dispatcher = GlobalEventDispatcher.getInstance();
 
     public function new()
     {
@@ -175,6 +177,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         formNameItem.paddingLeft = formNameItem.paddingRight = 10;
         this.textFormName = new TextInput();
         this.textFormName.restrict = "0-9A-Za-z_";
+        this.textFormName.addEventListener(FocusEvent.FOCUS_OUT, this.onInputFocusChange, false, 0, true);
         formNameItem.content = this.textFormName;
         form.addChild(formNameItem);
 
@@ -182,6 +185,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         viewNameItem.horizontalAlign = JUSTIFY;
         viewNameItem.paddingLeft = viewNameItem.paddingRight = 10;
         this.textViewName = new TextInput();
+        this.textViewName.addEventListener(FocusEvent.FOCUS_OUT, this.onInputFocusChange, false, 0, true);
         viewNameItem.content = this.textViewName;
         form.addChild(viewNameItem);
 
@@ -260,7 +264,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         if (this.filePath != null) 
             this.retrieveFromFile();
         else 
-            GlobalEventDispatcher.getInstance().dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
+            this.dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
     }
 
     override private function update():Void 
@@ -508,8 +512,16 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     {
         var editingItem = cast(event.currentTarget, FormFieldDescriptor).editItem;
         cast(event.currentTarget, FormFieldDescriptor).removeEventListener(FormFieldDescriptor.EVENT_FORM_SUBMITS, onFormSubmits);
-
         if (this.dominoForm.fields.indexOf(editingItem) == -1) 
             this.dominoForm.fields.add(editingItem);
+
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
+    }
+
+    private function onInputFocusChange(event:FocusEvent):Void
+    {
+        this.dominoForm.formName = this.textFormName.text;
+        this.dominoForm.viewName = this.textViewName.text;
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
     }
 }
