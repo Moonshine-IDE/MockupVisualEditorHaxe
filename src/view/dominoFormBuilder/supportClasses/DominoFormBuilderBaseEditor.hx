@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.supportClasses;
 
+import haxeScripts.events.ConsoleEvent;
 import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
 import haxeScripts.events.GlobalEventDispatcher;
 import feathers.core.InvalidationFlag;
@@ -93,6 +94,8 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
     {
         return FormBuilderCodeUtils.toViewCode(dominoForm);
     }
+
+    private var dispatcher:GlobalEventDispatcher = GlobalEventDispatcher.getInstance();
     
     public function release():Void
     {
@@ -101,6 +104,9 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
 
     public function retrieveFromFile():Void
     {
+        var filePathSplit = filePath.split("/");
+        filePathSplit.splice(0, filePathSplit.length - 2);
+        this.dispatcher.dispatchEvent(new ConsoleEvent(ConsoleEvent.OUTPUT, "File loads from .."+ filePathSplit.join("/")));
         FormBuilderCodeUtils.loadFromFile(filePath, dominoForm, addChangeListeners);
     }
 
@@ -118,7 +124,8 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
         this.dominoForm.fields.addEventListener(Event.CHANGE, onFormFieldsCollectionChanged);
 
         this.setInvalid(InvalidationFlag.DATA);
-        GlobalEventDispatcher.getInstance().dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
+        this.dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
+        this.dispatcher.dispatchEvent(new ConsoleEvent(ConsoleEvent.OUTPUT, "File loads completes."));
     }
     
     private function removeChangeListeners():Void

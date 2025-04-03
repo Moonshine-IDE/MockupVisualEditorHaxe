@@ -105,7 +105,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
-    private var dispatcher = GlobalEventDispatcher.getInstance();
 
     public function new()
     {
