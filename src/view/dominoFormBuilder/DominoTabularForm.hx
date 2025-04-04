@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import view.dominoFormBuilder.vo.DominoFormFieldVO;
 import feathers.layout.AnchorLayoutData;
 import feathers.layout.AnchorLayout;
 import haxeScripts.valueObjects.ProjectVO;
@@ -101,6 +102,12 @@ class DominoTabularForm extends LayoutGroup
     private function get_formObject():DominoFormVO
     {
         return formDescriptor.dominoForm;
+    }
+
+    public var selectedItem(get, never):DominoFormFieldVO;
+    private function get_selectedItem():DominoFormFieldVO
+    {
+        return formDescriptor.selectedItem;
     }
     
     private var formDescriptor:FormDescriptor;

@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.utils.ComponentXMLMapping;
 import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
 import haxe.xml.Access;
@@ -99,10 +100,13 @@ class DominoFormVO extends EventDispatcher
         tempXML.addChild(Xml.createCData((viewName!=null)?viewName:""));
         xml.addChild(tempXML);
         
+        var fieldXml:Xml;
         tempXML = Xml.createElement("fields");
         for (field in fields)
         {
-            tempXML.addChild(field.toXML());
+            fieldXml = field.toXML();
+            ComponentXMLMapping.getInstance().registerComponent(field, haxe.xml.Printer.print(fieldXml, true));
+            tempXML.addChild(fieldXml);
         }
         xml.addChild(tempXML);
         

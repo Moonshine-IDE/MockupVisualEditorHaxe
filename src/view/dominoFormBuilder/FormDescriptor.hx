@@ -90,6 +90,12 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     public var isDefaultItem:Bool;
     public var selectedProject:ProjectVO;
 
+    public var selectedItem(get, never):DominoFormFieldVO;
+    private function get_selectedItem():DominoFormFieldVO
+    {
+        return this.dgFields.selectedItem;
+    }
+
     private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
     private var svViewName:StringValidator;
