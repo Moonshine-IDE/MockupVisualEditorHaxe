@@ -31,6 +31,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import openfl.events.FocusEvent;
+import haxe.Timer;
+import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
+import haxeScripts.events.GlobalEventDispatcher;
+import haxeScripts.utils.AppUtils;
 import views.popups.PopupSaveFile.SaveType;
 import views.popups.PopupFBSaveFile;
 import feathers.events.ValidationResultEvent;
@@ -85,6 +90,12 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     public var isDefaultItem:Bool;
     public var selectedProject:ProjectVO;
 
+    public var selectedItem(get, never):DominoFormFieldVO;
+    private function get_selectedItem():DominoFormFieldVO
+    {
+        return this.dgFields.selectedItem;
+    }
+
     private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
     private var svViewName:StringValidator;
@@ -100,7 +111,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
-    private var lblTitle:Label;
 
     public function new()
     {
@@ -143,41 +153,50 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     override private function initialize():Void 
     {
-        var thisLayout = new VerticalLayout();
-		thisLayout.horizontalAlign = CENTER;
-		thisLayout.gap = 10;
-		this.layout = thisLayout;
+        this.layout = new AnchorLayout();
 
-        this.lblTitle = new Label("New Domino Form");
-        this.lblTitle.variant = AppTheme.THEME_VARIANT_SECTION_TITLE;
-        this.lblTitle.layoutData = new VerticalLayoutData(100);
-        this.addChild(this.lblTitle);
+        var borderedHolder = new LayoutGroup();
+		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(AppTheme.isDarkMode()?0x222222:0x666666));
+		borderedHolder.layout = new AnchorLayout();
+		borderedHolder.layoutData = AnchorLayoutData.fill();
+		this.addChild(borderedHolder);
 
-        var line = new Line();
-        line.customVariant = AppTheme.THEME_VARIANT_LINE;
-        line.layoutData = new VerticalLayoutData(100);
-        this.addChild(line);
+        var rootContainerLayout = new VerticalLayout();
+        rootContainerLayout.paddingLeft = rootContainerLayout.paddingRight = rootContainerLayout.paddingBottom = 10;
+        rootContainerLayout.paddingTop = 20;
+		rootContainerLayout.gap = 20;
+
+        var rootContainer = new LayoutGroup();
+        rootContainer.backgroundSkin = new RectangleSkin(SolidColor(AppTheme.isDarkMode()?AppTheme.THEME_BG_DARK:AppTheme.THEME_BG_NORMAL));
+        rootContainer.layoutData = new AnchorLayoutData(22, 22, 22, 22);
+        rootContainer.layout = rootContainerLayout;
+        borderedHolder.addChild(rootContainer);        
 
         var form = new Form();
         form.layoutData = new VerticalLayoutData(100);
         form.addEventListener(FormEvent.SUBMIT, this.onFormSubmit, false, 0, true);
-        this.addChild(form);
+        rootContainer.addChild(form);
 
         var formNameItem = new FormItem("Form Name", null, true);
         formNameItem.horizontalAlign = JUSTIFY;
+        formNameItem.paddingLeft = formNameItem.paddingRight = 10;
         this.textFormName = new TextInput();
         this.textFormName.restrict = "0-9A-Za-z_";
+        this.textFormName.addEventListener(FocusEvent.FOCUS_OUT, this.onInputFocusChange, false, 0, true);
         formNameItem.content = this.textFormName;
         form.addChild(formNameItem);
 
         var viewNameItem = new FormItem("View Name", null, true);
         viewNameItem.horizontalAlign = JUSTIFY;
+        viewNameItem.paddingLeft = viewNameItem.paddingRight = 10;
         this.textViewName = new TextInput();
+        this.textViewName.addEventListener(FocusEvent.FOCUS_OUT, this.onInputFocusChange, false, 0, true);
         viewNameItem.content = this.textViewName;
         form.addChild(viewNameItem);
 
         var webFormItem = new FormItem("Is this a web form?");
         webFormItem.horizontalAlign = JUSTIFY;
+        webFormItem.paddingLeft = webFormItem.paddingRight = 10;
         var radioContainer = new LayoutGroup();
         radioContainer.layout = new HorizontalLayout();
         cast(radioContainer.layout, HorizontalLayout).gap = 10;
@@ -190,14 +209,8 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         webFormItem.content = radioContainer;
         form.addChild(webFormItem);
 
-        var borderedHolder = new LayoutGroup();
-		borderedHolder.backgroundSkin = new RectangleSkin(SolidColor(0x666666));
-		borderedHolder.layout = new AnchorLayout();
-		borderedHolder.layoutData = new VerticalLayoutData(100, 100);
-		this.addChild(borderedHolder);
-
         this.dgFields = new GridView();
-        this.dgFields.layoutData = new AnchorLayoutData(22, 22, 22, 22);
+        this.dgFields.layoutData = new VerticalLayoutData(100, 100);
         this.dgFields.variant = GridView.VARIANT_BORDERLESS;
         this.dgFields.resizableColumns = true;
         this.dgFields.dragEnabled = true;
@@ -221,9 +234,9 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             columnDelete
         ]);
 
-        borderedHolder.addChild(this.dgFields);
+        rootContainer.addChild(this.dgFields);
 
-        var footerContainerLayout = new HorizontalLayout();
+        /*var footerContainerLayout = new HorizontalLayout();
         footerContainerLayout.horizontalAlign = RIGHT;
         footerContainerLayout.gap = 10;
         footerContainerLayout.paddingTop = 6;
@@ -247,14 +260,16 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         this.btnSave = new Button("Save");
         this.btnSave.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
         this.btnSave.icon = new AssetLoader("images/icoSave.png");
-        footerContainer.addChild(this.btnSave);
+        footerContainer.addChild(this.btnSave);*/
 
-        form.submitButton = btnSave;
+        //form.submitButton = btnSave;
 
         super.initialize();
 
         if (this.filePath != null) 
             this.retrieveFromFile();
+        else 
+            this.dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_POPULATED));
     }
 
     override private function update():Void 
@@ -267,9 +282,6 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             this.dgFields.dataProvider = this.dominoForm.fields;
             if (this.dominoForm.fields.length > 0) 
                 this.dgFields.selectedIndex = 0;
-            this.btnSave.enabled = !this.isDefaultItem;
-            if (this.filePath != null) 
-                this.lblTitle.text = this.dominoForm.viewName;
         }
 
         super.update();
@@ -295,6 +307,21 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         }
 
         return isAllRight;
+    }
+
+    public function requestSaveByOwner():Void
+    {
+        this.onFormSubmit(null);
+    }
+
+    public function onFormSaved():Void
+    {
+        this.isDefaultItem = false;
+    }
+
+    public function addNewFieldRequest():Void
+    {
+        this.onItemAddEdit();
     }
 
     private function setupValidators():Void
@@ -395,7 +422,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 
     private function onItemAddRequest(event:TriggerEvent):Void
     {
-        this.onItemAddEdit();   
+        
     }
 
     private function onItemDeleteRequest(event:Event):Void
@@ -403,7 +430,10 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         var formObject = cast(cast(event.currentTarget, DeleteGridItemRenderer).data, DominoFormFieldVO);
         Alert.show("Confirm delete field?", "Warning!", ["Yes", "No"], (state) -> {
             if (state.text == "Yes") 
+            {
                 dominoForm.fields.remove(formObject);
+                dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
+            }
         });
     }
 
@@ -430,10 +460,15 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
             if (!this.performPreSaveChecks()) 
                 return;
 
-            this.dominoForm.formName = this.textFormName.text;
-            this.dominoForm.viewName = this.textViewName.text;
-            tabularTab.dispatchEvent(new VisualEditorEvent(this.sendEventAfterSave));
+            this.proceedToSave();
         }
+    }
+
+    private function proceedToSave():Void
+    {
+        this.dominoForm.formName = this.textFormName.text;
+        this.dominoForm.viewName = this.textViewName.text;
+        tabularTab.dispatchEvent(new VisualEditorEvent(this.sendEventAfterSave));
     }
 
     private function performPreSaveChecks():Bool
@@ -446,16 +481,14 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
 		// - user not authenticated
 		if (this.appModelLocator.currentUser == null)
         {
-            var authWindow = new PopupAuthentication();
-            authWindow.width = 400;
-            authWindow.height = 136;
-            PopUpManager.addPopUp(authWindow, Application.topLevelApplication);
+            AppUtils.openAuthenticationPrompt();
             return false;
         }
 
-        if (this.filePath == null)
+        if (this.filePath == null || this.isDefaultItem)
         {
             var saveWindow = new PopupFBSaveFile(SaveType.FormBuilder);
+            saveWindow.title = (this.isDefaultItem) ? "Save as" : "Save file";
             saveWindow.addEventListener(Event.CLOSE, onSavePopupClosed, false, 0, true);
             saveWindow.fileName = this.textFormName.text;
             saveWindow.project = this.selectedProject;
@@ -480,15 +513,23 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         tabularTab.dispatchEvent(new VisualEditorEvent(VisualEditorEvent.SAVE_NEW_FORM, saveWindow.fileName));
         
 		// re-run the process
-		this.onFormSubmit(null);
+		this.proceedToSave();
     }
 
     private function onFormSubmits(event:Event):Void
     {
         var editingItem = cast(event.currentTarget, FormFieldDescriptor).editItem;
         cast(event.currentTarget, FormFieldDescriptor).removeEventListener(FormFieldDescriptor.EVENT_FORM_SUBMITS, onFormSubmits);
-
         if (this.dominoForm.fields.indexOf(editingItem) == -1) 
             this.dominoForm.fields.add(editingItem);
+
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
+    }
+
+    private function onInputFocusChange(event:FocusEvent):Void
+    {
+        this.dominoForm.formName = this.textFormName.text;
+        this.dominoForm.viewName = this.textViewName.text;
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_UPDATED));
     }
 }

@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.utils.ComponentXMLMapping;
 import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
 import haxe.xml.Access;
@@ -43,7 +44,7 @@ class DominoFormVO extends EventDispatcher
 		
     public var formName:String;
     public var viewName:String;
-    public var hasWebAccess:Bool;
+    public var hasWebAccess:Bool = false;
     public var fields:ArrayCollection<DominoFormFieldVO> = new ArrayCollection();
     public var dxlGeneratedOn:Date;
     public var pageContent:Xml;
@@ -93,16 +94,19 @@ class DominoFormVO extends EventDispatcher
     {
         var xml:Xml = Xml.createElement(ELEMENT_NAME);
         xml.set("hasWebAccess", Std.string(hasWebAccess));
-        xml.set("name", formName);
+        xml.set("name", (formName!=null)?formName:"");
         
         var tempXML:Xml = Xml.createElement("viewName");
-        tempXML.addChild(Xml.createCData(viewName));
+        tempXML.addChild(Xml.createCData((viewName!=null)?viewName:""));
         xml.addChild(tempXML);
         
+        var fieldXml:Xml;
         tempXML = Xml.createElement("fields");
         for (field in fields)
         {
-            tempXML.addChild(field.toXML());
+            fieldXml = field.toXML();
+            ComponentXMLMapping.getInstance().registerComponent(field, haxe.xml.Printer.print(fieldXml, true));
+            tempXML.addChild(fieldXml);
         }
         xml.addChild(tempXML);
         
