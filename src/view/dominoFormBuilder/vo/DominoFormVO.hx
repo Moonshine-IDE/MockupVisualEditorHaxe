@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.valueObjects.AppConstants;
+import haxeScripts.utils.XmlNsHelper;
 import haxeScripts.utils.ComponentXMLMapping;
 import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
@@ -40,7 +42,7 @@ import openfl.events.EventDispatcher;
 
 class DominoFormVO extends EventDispatcher 
 {
-    public static final ELEMENT_NAME:String = "form";
+    public static final ELEMENT_NAME:String = "fb:form";
 		
     public var formName:String;
     public var viewName:String;
@@ -65,23 +67,36 @@ class DominoFormVO extends EventDispatcher
     
     public function fromXML(value:Xml, callback:()->Void):Void
     {
-        var accessXML = new Access(value);
-        
-        this.formName = accessXML.node.root.node.form.att.name;
-        this.hasWebAccess = (accessXML.node.root.node.form.att.hasWebAccess == "true") ? true : false;
-        this.viewName = accessXML.node.root.node.form.node.viewName.innerData;
-        if (accessXML.node.root.node.form.has.dxlGeneratedOn)
+        var accessXML = new Access(value.firstElement());
+        var helper = new XmlNsHelper(accessXML);
+        helper.registerNamespace("fb", AppConstants.NAMESPACE_URI_FORMBUILDER);
+
+        // find/get `form` element
+        if (helper.hasElement('form', AppConstants.NAMESPACE_FORMBUILDER))
         {
-            /*this.dxlGeneratedOn = Date.fromString(
-                accessXML.node.root.node.form.att.dxlGeneratedOn
-            );*/
-        }
-        
-        for (field in accessXML.node.root.node.form.node.fields.nodes.field)
-        {
-            var tmpField:DominoFormFieldVO = new DominoFormFieldVO();
-            tmpField.fromXML(field);
-            fields.add(tmpField);
+            var formHelper = helper.forChild('form', AppConstants.NAMESPACE_FORMBUILDER);
+            this.formName = formHelper.xmlAccess.att.name;
+            this.hasWebAccess = (formHelper.xmlAccess.att.hasWebAccess == "true") ? true : false;
+
+            if (formHelper.hasElement("viewName", AppConstants.NAMESPACE_FORMBUILDER)) 
+            {
+                this.viewName = formHelper.getElement("viewName", AppConstants.NAMESPACE_FORMBUILDER).innerData;
+            }
+            if (formHelper.xmlAccess.has.dxlGeneratedOn)
+            {
+                /*this.dxlGeneratedOn = Date.fromString(
+                    formHelper.xmlAccess.att.dxlGeneratedOn
+                );*/
+            }
+
+            // parse `fields`
+            var fieldsHelper = formHelper.forChild("fields", AppConstants.NAMESPACE_FORMBUILDER);
+            for (field in fieldsHelper.getElements('field', AppConstants.NAMESPACE_FORMBUILDER))
+            {
+                var tmpField:DominoFormFieldVO = new DominoFormFieldVO();
+                tmpField.fromXML(field);
+                fields.add(tmpField);
+            }
         }
         
         if (callback != null)
@@ -96,12 +111,12 @@ class DominoFormVO extends EventDispatcher
         xml.set("hasWebAccess", Std.string(hasWebAccess));
         xml.set("name", (formName!=null)?formName:"");
         
-        var tempXML:Xml = Xml.createElement("viewName");
+        var tempXML:Xml = Xml.createElement("fb:viewName");
         tempXML.addChild(Xml.createCData((viewName!=null)?viewName:""));
         xml.addChild(tempXML);
         
         var fieldXml:Xml;
-        tempXML = Xml.createElement("fields");
+        tempXML = Xml.createElement("fb:fields");
         for (field in fields)
         {
             fieldXml = field.toXML();

@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.valueObjects.AppConstants;
+import haxeScripts.utils.XmlNsHelper;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
@@ -39,7 +41,7 @@ import haxe.xml.Access;
 
 class DominoFormFieldVO extends EventDispatcher
 {
-    public static final ELEMENT_NAME:String = "field";
+    public static final ELEMENT_NAME:String = "fb:field";
     public static final EVENT_PROPERTY_CHANGED = "event-property-changed";
 		
     public var description:String = "";
@@ -124,6 +126,9 @@ class DominoFormFieldVO extends EventDispatcher
     
     public function fromXML(accessXML:Access, ?callback:()->Void):Void
     {
+        var fieldHelper = new XmlNsHelper(accessXML);
+        fieldHelper.registerNamespace(AppConstants.NAMESPACE_FORMBUILDER, AppConstants.NAMESPACE_URI_FORMBUILDER);
+
         this.name = accessXML.att.name;
         this.type = accessXML.att.type;
         this.editable = accessXML.att.editable;
@@ -139,9 +144,9 @@ class DominoFormFieldVO extends EventDispatcher
             }
         }
         
-        try { this.label = accessXML.node.label.innerData; } catch (e) {}
-        try { this.description = accessXML.node.description.innerData; } catch (e) {}
-        try { this.formula = accessXML.node.formula.innerData; } catch (e) {}
+        try { this.label = fieldHelper.getElement('label', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
+        try { this.description = fieldHelper.getElement('description', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
+        try { this.formula = fieldHelper.getElement('formula', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
     }
     
     public function toXML():Xml
@@ -155,15 +160,15 @@ class DominoFormFieldVO extends EventDispatcher
         xml.set("isMultiValue", Std.string(isMultiValue));
         xml.set("isIncludeInView", Std.string(isIncludeInView));
         
-        var tempXML = Xml.createElement("label");
+        var tempXML = Xml.createElement("fb:label");
         tempXML.addChild(Xml.createCData(label));
         xml.addChild(tempXML);
         
-        tempXML = Xml.createElement("description");
+        tempXML = Xml.createElement("fb:description");
         tempXML.addChild(Xml.createCData(description));
         xml.addChild(tempXML);
         
-        tempXML = Xml.createElement("formula");
+        tempXML = Xml.createElement("fb:formula");
         tempXML.addChild(Xml.createCData(formula));
         xml.addChild(tempXML);
         
