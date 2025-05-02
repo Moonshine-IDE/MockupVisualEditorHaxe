@@ -75,7 +75,6 @@ import feathers.layout.AnchorLayoutData;
 import feathers.controls.GridView;
 import feathers.layout.AnchorLayout;
 import feathers.skins.RectangleSkin;
-import feathers.text.TextFormat;
 import feathers.controls.Label;
 import feathers.layout.VerticalLayoutData;
 import feathers.controls.LayoutGroup;
@@ -111,6 +110,7 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
     private var rbWebFormNo:Radio;
     private var sendEventAfterSave:String;
     private var btnSave:Button;
+    private var lblGridMessage:Label;
 
     public function new()
     {

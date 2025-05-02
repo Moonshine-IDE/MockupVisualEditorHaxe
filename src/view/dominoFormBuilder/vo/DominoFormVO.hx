@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import view.dominoFormBuilder.supportClasses.events.FormBuilderEvent;
+import haxeScripts.events.GlobalEventDispatcher;
 import haxeScripts.valueObjects.AppConstants;
 import haxeScripts.utils.XmlNsHelper;
 import haxeScripts.utils.ComponentXMLMapping;
@@ -54,6 +56,8 @@ class DominoFormVO extends EventDispatcher
     public var subFormsNames:Array<String>;
     public var projectPath:FileLocation;
 
+    private var dispatcher = GlobalEventDispatcher.getInstance();
+
     public function new()
     {
         super();
@@ -67,20 +71,26 @@ class DominoFormVO extends EventDispatcher
     
     public function fromXML(value:Xml, callback:()->Void):Void
     {
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_PARSING_BEGINS));
+
+        // give a check if the xml has `fb` namespace
+        // or it's an old format
+        var hasNamespace = XmlNsHelper.documentHasNamespaceWithURI(value, AppConstants.NAMESPACE_FORMBUILDER, AppConstants.NAMESPACE_URI_FORMBUILDER);
+
         var accessXML = new Access(value.firstElement());
         var helper = new XmlNsHelper(accessXML);
-        helper.registerNamespace("fb", AppConstants.NAMESPACE_URI_FORMBUILDER);
+        helper.registerNamespace(AppConstants.NAMESPACE_FORMBUILDER, AppConstants.NAMESPACE_URI_FORMBUILDER);
 
         // find/get `form` element
-        if (helper.hasElement('form', AppConstants.NAMESPACE_FORMBUILDER))
+        if (helper.hasElement('form', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace))
         {
-            var formHelper = helper.forChild('form', AppConstants.NAMESPACE_FORMBUILDER);
+            var formHelper = helper.forChild('form', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace);
             this.formName = formHelper.xmlAccess.att.name;
             this.hasWebAccess = (formHelper.xmlAccess.att.hasWebAccess == "true") ? true : false;
 
-            if (formHelper.hasElement("viewName", AppConstants.NAMESPACE_FORMBUILDER)) 
+            if (formHelper.hasElement("viewName", AppConstants.NAMESPACE_FORMBUILDER, hasNamespace)) 
             {
-                this.viewName = formHelper.getElement("viewName", AppConstants.NAMESPACE_FORMBUILDER).innerData;
+                this.viewName = formHelper.getElement("viewName", AppConstants.NAMESPACE_FORMBUILDER, hasNamespace).innerData;
             }
             if (formHelper.xmlAccess.has.dxlGeneratedOn)
             {
@@ -90,15 +100,16 @@ class DominoFormVO extends EventDispatcher
             }
 
             // parse `fields`
-            var fieldsHelper = formHelper.forChild("fields", AppConstants.NAMESPACE_FORMBUILDER);
-            for (field in fieldsHelper.getElements('field', AppConstants.NAMESPACE_FORMBUILDER))
+            var fieldsHelper = formHelper.forChild("fields", AppConstants.NAMESPACE_FORMBUILDER, hasNamespace);
+            for (field in fieldsHelper.getElements('field', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace))
             {
                 var tmpField:DominoFormFieldVO = new DominoFormFieldVO();
-                tmpField.fromXML(field);
+                tmpField.fromXML(field, null, hasNamespace);
                 fields.add(tmpField);
             }
         }
         
+        dispatcher.dispatchEvent(new FormBuilderEvent(FormBuilderEvent.FORM_PARSING_ENDS));
         if (callback != null)
         {
             callback();

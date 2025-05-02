@@ -10,6 +10,7 @@ extern class AppTheme extends ClassVariantTheme
     public static final THEME_NORMAL_BACKGROUND_SKIN:String;
     public static final THEME_BG_NORMAL:UInt;
 	public static final THEME_BG_DARK:UInt;
+    public static final DEFAULT_FONT:String;
 
     public static function isDarkMode():Bool;
 }

@@ -124,7 +124,7 @@ class DominoFormFieldVO extends EventDispatcher
     //
     //--------------------------------------------------------------------------
     
-    public function fromXML(accessXML:Access, ?callback:()->Void):Void
+    public function fromXML(accessXML:Access, ?callback:()->Void, ?hasNamespace:Bool):Void
     {
         var fieldHelper = new XmlNsHelper(accessXML);
         fieldHelper.registerNamespace(AppConstants.NAMESPACE_FORMBUILDER, AppConstants.NAMESPACE_URI_FORMBUILDER);
@@ -144,9 +144,9 @@ class DominoFormFieldVO extends EventDispatcher
             }
         }
         
-        try { this.label = fieldHelper.getElement('label', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
-        try { this.description = fieldHelper.getElement('description', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
-        try { this.formula = fieldHelper.getElement('formula', AppConstants.NAMESPACE_FORMBUILDER).innerData; } catch (e) {}
+        try { this.label = fieldHelper.getElement('label', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace).innerData; } catch (e) {}
+        try { this.description = fieldHelper.getElement('description', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace).innerData; } catch (e) {}
+        try { this.formula = fieldHelper.getElement('formula', AppConstants.NAMESPACE_FORMBUILDER, hasNamespace).innerData; } catch (e) {}
     }
     
     public function toXML():Xml

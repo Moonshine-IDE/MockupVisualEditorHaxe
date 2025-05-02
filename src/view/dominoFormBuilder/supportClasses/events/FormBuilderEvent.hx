@@ -37,6 +37,8 @@ class FormBuilderEvent extends Event
 {
     public static final FORM_POPULATED:String = "event-fb-form-populated";
     public static final FORM_UPDATED = "event-fb-form-updated";
+    public static final FORM_PARSING_BEGINS = "event-fb-form-parsing-begins";
+    public static final FORM_PARSING_ENDS = "event-fb-form-parsing-ends";
 
     public var data:Dynamic;
     public function new(type:String, ?data:Dynamic)
