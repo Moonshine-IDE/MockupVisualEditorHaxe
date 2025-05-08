@@ -153,7 +153,7 @@ class DominoTabularForm extends LayoutGroup
         errorMessageContainer.layout = new AnchorLayout();
         errorMessageContainer.backgroundSkin = new RectangleSkin(
             SolidColor(AppTheme.isDarkMode() ? 0x383838 : 0xffffff), 
-            SolidColor(1, AppTheme.isDarkMode() ? 0x222222 : 0x999999)
+            SolidColor(2, AppTheme.isDarkMode() ? 0x222222 : 0x999999)
             );
         errorMessageContainer.layoutData = AnchorLayoutData.fill();
         errorMessageContainer.includeInLayout = errorMessageContainer.visible = false;
@@ -161,7 +161,7 @@ class DominoTabularForm extends LayoutGroup
 
         var lblErrorMessage:Label = new Label("Invalid XML in Code view. Fix errors to continue.");
         lblErrorMessage.layoutData = AnchorLayoutData.center();
-        lblErrorMessage.textFormat = new TextFormat(AppTheme.DEFAULT_FONT, 14, 0xff0000);
+        lblErrorMessage.textFormat = new TextFormat(AppTheme.DEFAULT_FONT, 14, AppTheme.isDarkMode() ? 0xff3333 : 0xff0000);
         errorMessageContainer.addChild(lblErrorMessage);
 
         super.initialize();
