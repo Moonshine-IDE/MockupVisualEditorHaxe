@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.utils;
 
+import Type.ValueType;
+import haxe.xml.Access;
 import utils.MoonshineBridgeUtils;
 import view.dominoFormBuilder.vo.DominoFormVO;
 
@@ -87,5 +89,80 @@ class FormBuilderCodeUtils
         view = ereg.replace(view, formObject.toViewColumnsCode());
         
         return Xml.parse(view);
+    }
+
+    public static function populateObjectFromXml(xml:Xml):Void
+    {
+        var instance = new DominoFormVO();
+        var access = new Access(xml);
+
+        // set attributes
+        for (attr in access.x.attributes()) 
+        {
+            if (Reflect.hasField(instance, attr)) {
+                try {
+                    var fieldValue = Reflect.field(instance, attr);
+                    var fieldType = Type.typeof(fieldValue);
+                    var stringValue = access.att.resolve(attr);
+                    var convertedValue = convertValueToType(stringValue, fieldType);
+                    
+                    Reflect.setField(instance, attr, convertedValue);
+                } catch (e) {
+                    trace('Warning: Could not set attribute $attr: $e');
+                }
+            }
+        }
+
+        // parse children
+        for (node in access.elements)
+        {
+            var fieldName = node.name;
+            if (Reflect.hasField(instance, fieldName))
+            {
+                var fieldInsance = Reflect.field(instance, fieldName);
+
+                // determine if it's an array 
+                // contains a typed object
+                if (Std.isOfType(fieldInsance, Array))
+                {
+                    var array:Array<Dynamic> = cast fieldInsance;
+                }
+                // generic type
+                else
+                {
+                    var fieldType = Type.typeof(fieldInsance);
+                    var fieldValue = convertValueToType(node.innerData, fieldType);
+                    Reflect.setField(instance, fieldName, fieldValue);
+                }
+            }
+        }
+    }
+
+    private static function convertValueToType(value:String, type:ValueType):Dynamic 
+    {
+        switch (type) 
+        {
+            case TInt:
+                return Std.parseInt(value);
+            case TFloat:
+                return Std.parseFloat(value);
+            case TBool:
+                return value.toLowerCase() == "true";
+            case TClass(c):
+                if (c == Date) 
+                    return Date.fromString(value);
+                return value;
+            default:
+                return value;
+        }
+    }
+
+    private static function isBasicType(value:Dynamic):Bool
+    {
+        return Std.isOfType(value, String) || 
+               Std.isOfType(value, Int) ||
+               Std.isOfType(value, Float) ||
+               Std.isOfType(value, Bool) ||
+               Std.isOfType(value, Date);
     }
 }
