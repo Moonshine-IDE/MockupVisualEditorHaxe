@@ -126,6 +126,13 @@ class DominoTabularForm extends LayoutGroup
     {
         return formDescriptor.selectedItem;
     }
+
+    public var updateWithXml(never, set):Xml;
+    private function set_updateWithXml(value:Xml):Xml
+    {
+        formDescriptor.updateWithXml = value;
+        return null;
+    }
     
     private var formDescriptor:FormDescriptor;
     private var errorMessageContainer:LayoutGroup;

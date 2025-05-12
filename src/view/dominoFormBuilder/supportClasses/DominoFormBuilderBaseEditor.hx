@@ -106,6 +106,12 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
         FormBuilderCodeUtils.loadFromFile(filePath, dominoForm, addChangeListeners);
     }
 
+    public function retrieveFromXml(value:Xml):Void
+    {
+        this.dominoForm = new DominoFormVO();
+        FormBuilderCodeUtils.loadFromXml(value, dominoForm, addChangeListeners);
+    }
+
     //--------------------------------------------------------------------------
     //
     //  PRIVATE API
