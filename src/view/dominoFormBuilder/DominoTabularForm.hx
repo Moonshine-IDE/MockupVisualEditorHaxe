@@ -31,6 +31,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder;
 
+import openfl.events.Event;
+import feathers.events.TriggerEvent;
+import feathers.controls.Button;
+import feathers.skins.RectangleSkin;
+import theme.AppTheme;
+import feathers.text.TextFormat;
+import feathers.controls.Label;
+import feathers.core.InvalidationFlag;
 import view.dominoFormBuilder.vo.DominoFormFieldVO;
 import feathers.layout.AnchorLayoutData;
 import feathers.layout.AnchorLayout;
@@ -44,6 +52,8 @@ import feathers.controls.LayoutGroup;
 
 class DominoTabularForm extends LayoutGroup 
 {
+    public static final EVENT_OPEN_CODE = "event-open-code-view";
+
     public var isDefaultItem:Bool;
     public var selectedProject:ProjectVO;
 
@@ -61,6 +71,18 @@ class DominoTabularForm extends LayoutGroup
             this.formDescriptor.filePath = value;
         }
         return _filePath;
+    }
+
+    private var _isCodeError:Bool;
+    public var isCodeError(never, set):Bool;
+    private function set_isCodeError(value:Bool):Bool
+    {
+        if (_isCodeError == value) 
+            return _isCodeError;
+
+        _isCodeError = value;
+        this.setInvalid(InvalidationFlag.DATA);
+        return _isCodeError;
     }
 
     public var moonshineBridge(get, set):IDominoFormBuilderLibraryBridge;
@@ -109,8 +131,16 @@ class DominoTabularForm extends LayoutGroup
     {
         return formDescriptor.selectedItem;
     }
+
+    public var updateWithXml(never, set):Xml;
+    private function set_updateWithXml(value:Xml):Xml
+    {
+        formDescriptor.updateWithXml = value;
+        return null;
+    }
     
     private var formDescriptor:FormDescriptor;
+    private var errorMessageContainer:LayoutGroup;
 
     public function new()
     {
@@ -131,7 +161,48 @@ class DominoTabularForm extends LayoutGroup
         formDescriptor.tabularTab = this;
         this.addChild(formDescriptor);
 
+        errorMessageContainer = new LayoutGroup();
+        errorMessageContainer.layout = new AnchorLayout();
+        errorMessageContainer.backgroundSkin = new RectangleSkin(
+            SolidColor(AppTheme.isDarkMode() ? 0x383838 : 0xffffff), 
+            SolidColor(2, AppTheme.isDarkMode() ? 0x222222 : 0x999999)
+            );
+        errorMessageContainer.layoutData = AnchorLayoutData.fill();
+        errorMessageContainer.includeInLayout = errorMessageContainer.visible = false;
+        this.addChild(errorMessageContainer);
+
+        var lblErrorMessage:Label = new Label("Invalid XML in Code view. Fix errors to continue.");
+        lblErrorMessage.layoutData = AnchorLayoutData.center(0, -30);
+        lblErrorMessage.textFormat = new TextFormat(AppTheme.DEFAULT_FONT, 14, AppTheme.isDarkMode() ? 0xff3333 : 0xff0000);
+        errorMessageContainer.addChild(lblErrorMessage);
+
+        var btnNavToCode = new Button("Go to Code");
+        btnNavToCode.variant = AppTheme.THEME_VARIANT_BUTTON_SECTION;
+        btnNavToCode.layoutData = AnchorLayoutData.center(0, 10);
+        btnNavToCode.addEventListener(TriggerEvent.TRIGGER, onNavToCode, false, 0, true);
+        errorMessageContainer.addChild(btnNavToCode);
+
         super.initialize();
+    }
+
+    override private function update():Void 
+    {
+        var dataInvalid = this.isInvalid(InvalidationFlag.DATA);
+        if (dataInvalid) 
+        {
+            if (this._isCodeError)
+            {
+                this.formDescriptor.includeInLayout = this.formDescriptor.visible = false;
+                this.errorMessageContainer.includeInLayout = this.errorMessageContainer.visible = true;
+            }
+            else if (!this.formDescriptor.visible)
+            {
+                this.errorMessageContainer.includeInLayout = this.errorMessageContainer.visible = false;
+                this.formDescriptor.includeInLayout = this.formDescriptor.visible = true;
+            }
+        }
+
+        super.update();
     }
 
     public function release():Void
@@ -152,5 +223,10 @@ class DominoTabularForm extends LayoutGroup
     public function addNewFieldRequest():Void
     {
         formDescriptor.addNewFieldRequest();
+    }
+
+    private function onNavToCode(event:TriggerEvent):Void
+    {
+        this.dispatchEvent(new Event(EVENT_OPEN_CODE));
     }
 }

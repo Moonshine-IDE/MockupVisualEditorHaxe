@@ -96,6 +96,13 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         return this.dgFields.selectedItem;
     }
 
+    public var updateWithXml(never, set):Xml;
+    private function set_updateWithXml(value:Xml):Xml
+    {
+        this.retrieveFromXml(value);
+        return null;
+    }
+
     private var appModelLocator = AppModelLocator.getInstance();
     private var svFormName:StringValidator;
     private var svViewName:StringValidator;

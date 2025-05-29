@@ -31,6 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.utils;
 
+import Type.ValueType;
+import haxe.xml.Access;
 import utils.MoonshineBridgeUtils;
 import view.dominoFormBuilder.vo.DominoFormVO;
 
@@ -56,6 +58,11 @@ class FormBuilderCodeUtils
         }
         
         MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.readAsync(path, successHandler, errorHandler);
+    }
+
+    public static function loadFromXml(xml:Xml, toFormObject:DominoFormVO, ?onSuccess:()->Void):Void
+    {
+        toFormObject.fromXML(xml, onSuccess);
     }
 
     public static function toDominoCode(formObject:DominoFormVO):Xml
