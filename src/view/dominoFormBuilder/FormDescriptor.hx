@@ -294,6 +294,11 @@ class FormDescriptor extends DominoFormBuilderBaseEditor
         super.update();
     }
 
+    public function invalidateView():Void
+    {
+        this.update();
+    }
+
     public function validateForm():Bool
     {
         this.setupValidators();
