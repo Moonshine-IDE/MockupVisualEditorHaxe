@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
-import haxeScripts.utils.ProminicAccess;
+import haxeScripts.utils.MoonshineAccess;
 import haxeScripts.utils.ComponentXMLMapping;
 import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
@@ -66,7 +66,7 @@ class DominoFormVO extends EventDispatcher
     
     public function fromXML(value:Xml, callback:()->Void):Void
     {
-        var accessXML = new ProminicAccess(value);
+        var accessXML = new MoonshineAccess(value);
         
         this.formName = accessXML.node.root.node.form.att.name;
         this.hasWebAccess = (accessXML.node.root.node.form.att.hasWebAccess == "true") ? true : false;

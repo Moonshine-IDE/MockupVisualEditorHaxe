@@ -1,6 +1,6 @@
 package haxeScripts.utils;
 
-extern class ProminicAccess 
+extern class MoonshineAccess 
 {
     public function new(x:Xml):Void;
 
@@ -16,35 +16,35 @@ extern class ProminicAccess
     public var innerHTML(get, never):String;
     function get_innerHTML():String;
 
-    public var node(get, never):ProminicAccess.NodeAccess;
-    function get_node():ProminicAccess.NodeAccess;
+    public var node(get, never):MoonshineAccess.NodeAccess;
+    function get_node():MoonshineAccess.NodeAccess;
 
-    public var nodes(get, never):ProminicAccess.NodeListAccess;
-    function get_nodes():ProminicAccess.NodeListAccess;
+    public var nodes(get, never):MoonshineAccess.NodeListAccess;
+    function get_nodes():MoonshineAccess.NodeListAccess;
 
-    public var att(get, never):ProminicAccess.AttribAccess;
-    function get_att():ProminicAccess.AttribAccess;
+    public var att(get, never):MoonshineAccess.AttribAccess;
+    function get_att():MoonshineAccess.AttribAccess;
 
-    public var has(get, never):ProminicAccess.HasAttribAccess;
-    function get_has():ProminicAccess.HasAttribAccess;
+    public var has(get, never):MoonshineAccess.HasAttribAccess;
+    function get_has():MoonshineAccess.HasAttribAccess;
 
-    public var hasNode(get, never):ProminicAccess.HasNodeAccess;
-    function get_hasNode():ProminicAccess.HasNodeAccess;
+    public var hasNode(get, never):MoonshineAccess.HasNodeAccess;
+    function get_hasNode():MoonshineAccess.HasNodeAccess;
 
-    public var elements(get, never):Iterator<ProminicAccess>;
-    function get_elements():Iterator<ProminicAccess>;
+    public var elements(get, never):Iterator<MoonshineAccess>;
+    function get_elements():Iterator<MoonshineAccess>;
 }
 
 @:forward
 extern abstract NodeAccess(Xml) from Xml {
     @:op(a.b)
-    public function resolve(name:String):ProminicAccess;
+    public function resolve(name:String):MoonshineAccess;
 }
 
 @:forward
 extern abstract NodeListAccess(Xml) from Xml {
     @:op(a.b)
-    public function resolve(name:String):Array<ProminicAccess>;
+    public function resolve(name:String):Array<MoonshineAccess>;
 }
 
 @:forward

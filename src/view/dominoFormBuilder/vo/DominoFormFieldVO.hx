@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
-import haxeScripts.utils.ProminicAccess;
+import haxeScripts.utils.MoonshineAccess;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
@@ -123,7 +123,7 @@ class DominoFormFieldVO extends EventDispatcher
     //
     //--------------------------------------------------------------------------
     
-    public function fromXML(accessXML:ProminicAccess, ?callback:()->Void):Void
+    public function fromXML(accessXML:MoonshineAccess, ?callback:()->Void):Void
     {
         this.name = accessXML.att.name;
         this.type = accessXML.att.type;
