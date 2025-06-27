@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 package view.dominoFormBuilder.vo;
 
+import haxeScripts.utils.ProminicAccess;
 import haxeScripts.utils.ComponentXMLMapping;
 import haxeScripts.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
@@ -65,11 +66,11 @@ class DominoFormVO extends EventDispatcher
     
     public function fromXML(value:Xml, callback:()->Void):Void
     {
-        var accessXML = new Access(value);
+        var accessXML = new ProminicAccess(value);
         
         this.formName = accessXML.node.root.node.form.att.name;
         this.hasWebAccess = (accessXML.node.root.node.form.att.hasWebAccess == "true") ? true : false;
-        this.viewName = accessXML.node.root.node.form.node.viewName.innerData;
+        this.viewName = (accessXML.node.root.node.form.node.viewName.innerData != "") ? accessXML.node.root.node.form.node.viewName.innerData : "";
         if (accessXML.node.root.node.form.has.dxlGeneratedOn)
         {
             /*this.dxlGeneratedOn = Date.fromString(
