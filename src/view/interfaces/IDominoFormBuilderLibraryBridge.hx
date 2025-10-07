@@ -39,6 +39,6 @@ interface IDominoFormBuilderLibraryBridge
     function getTabularEditorInterfaceWrapper():DominoTabularForm;
     function getNewMoonshinePopup():DisplayObject;
     function read(file:String):String;
-    function readAsync(file:String, ?successHandler:(file:String, output:Dynamic)->Void, ?errorHandler:(error:String)->Void):Void;
+    function readAsync(file:String, ?successHandler:(file:String, output:Dynamic)->Void, ?errorHandler:(error:String)->Void, ?processID:String):Void;
     function getDominoFieldTemplateFile(path:String):String;
 }
