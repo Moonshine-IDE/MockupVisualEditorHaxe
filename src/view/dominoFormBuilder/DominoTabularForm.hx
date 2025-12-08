@@ -225,6 +225,11 @@ class DominoTabularForm extends LayoutGroup
         formDescriptor.addNewFieldRequest();
     }
 
+    public function invalidateView():Void
+    {
+        formDescriptor.invalidateView();
+    }
+
     private function onNavToCode(event:TriggerEvent):Void
     {
         this.dispatchEvent(new Event(EVENT_OPEN_CODE));
