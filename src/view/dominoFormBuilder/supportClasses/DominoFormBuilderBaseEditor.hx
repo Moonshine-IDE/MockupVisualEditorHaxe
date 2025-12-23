@@ -42,6 +42,7 @@ import feathers.controls.LayoutGroup;
 
 class DominoFormBuilderBaseEditor extends LayoutGroup 
 {
+    public var isDefaultItem:Bool;
     public var tabularTab:DominoTabularForm;
 
     private var _dominoForm:DominoFormVO = new DominoFormVO();
@@ -103,7 +104,7 @@ class DominoFormBuilderBaseEditor extends LayoutGroup
 
     public function retrieveFromFile():Void
     {
-        FormBuilderCodeUtils.loadFromFile(filePath, dominoForm, addChangeListeners);
+        FormBuilderCodeUtils.loadFromFile(filePath, dominoForm, addChangeListeners, null, isDefaultItem);
     }
 
     public function retrieveFromXml(value:Xml):Void
