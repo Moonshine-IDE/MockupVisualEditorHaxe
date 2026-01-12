@@ -87,7 +87,6 @@ import views.renderers.GridViewColumnMultiline;
 
 class FormDescriptor extends DominoFormBuilderBaseEditor 
 {
-    public var isDefaultItem:Bool;
     public var selectedProject:ProjectVO;
 
     public var selectedItem(get, never):DominoFormFieldVO;

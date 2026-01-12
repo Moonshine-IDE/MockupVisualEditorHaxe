@@ -38,7 +38,7 @@ import view.dominoFormBuilder.vo.DominoFormVO;
 
 class FormBuilderCodeUtils 
 {
-    public static function loadFromFile(path:String, toFormObject:DominoFormVO, ?onSuccess:()->Void, ?processID:String):Void
+    public static function loadFromFile(path:String, toFormObject:DominoFormVO, ?onSuccess:()->Void, ?processID:String, ?isPublicDownload:Bool=false):Void
     {
         function successHandler(file:String, output:Dynamic)
         {
@@ -57,7 +57,8 @@ class FormBuilderCodeUtils
                 onSuccess();
         }
         
-        MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.readAsync(path, successHandler, errorHandler, processID);
+        if (isPublicDownload) MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.readAsyncPublic(path, successHandler, errorHandler, processID);
+        else MoonshineBridgeUtils.moonshineBridgeFormBuilderInterface.readAsync(path, successHandler, errorHandler, processID);
     }
 
     public static function loadFromXml(xml:Xml, toFormObject:DominoFormVO, ?onSuccess:()->Void):Void
