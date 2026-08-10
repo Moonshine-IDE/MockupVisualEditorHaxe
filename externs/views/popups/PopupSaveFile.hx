@@ -1,6 +1,6 @@
 package views.popups;
 
-import haxeScripts.valueObjects.ProjectVO;
+import moonshine.valueObjects.ProjectVO;
 import feathers.controls.TitleWindow;
 
 extern enum abstract SaveType(String)

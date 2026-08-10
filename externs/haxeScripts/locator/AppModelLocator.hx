@@ -1,6 +1,6 @@
 package haxeScripts.locator;
 
-import haxeScripts.interfaces.IFileBridge;
+import moonshine.interfaces.IFileBridge;
 import openfl.events.EventDispatcher;
 
 extern class AppModelLocator extends EventDispatcher

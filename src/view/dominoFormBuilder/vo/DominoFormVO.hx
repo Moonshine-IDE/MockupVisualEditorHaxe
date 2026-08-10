@@ -33,7 +33,7 @@ package view.dominoFormBuilder.vo;
 
 import haxeScripts.utils.MoonshineAccess;
 import haxeScripts.utils.ComponentXMLMapping;
-import haxeScripts.factory.FileLocation;
+import moonshine.factory.FileLocation;
 import view.dominoFormBuilder.utils.DominoTemplatesManager;
 import haxe.xml.Access;
 import feathers.data.ArrayCollection;

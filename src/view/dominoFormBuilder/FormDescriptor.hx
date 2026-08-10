@@ -43,7 +43,7 @@ import feathers.controls.AssetLoader;
 import theme.AppTheme;
 import feathers.layout.HorizontalLayoutData;
 import haxeScripts.ui.Spacer;
-import haxeScripts.valueObjects.ProjectVO;
+import moonshine.valueObjects.ProjectVO;
 import views.popups.PopupAuthentication;
 import haxeScripts.locator.AppModelLocator;
 import feathers.controls.Alert;
